@@ -1,0 +1,42 @@
+{
+  "schema_version": 2,
+  "project": {
+    "name": "CineLanding Showcase",
+    "slug": "cinelanding-showcase",
+    "default_locale": "en-US",
+    "locales": [
+      "en-US",
+      "ru-RU"
+    ],
+    "mode": "from-scratch",
+    "motion_style": "journey",
+    "source_url": null,
+    "audience": "Design-led founders and creative teams",
+    "created_at": "2026-08-26T21:43:45+00:00"
+  },
+  "scenes": [
+    {
+      "id": "scene-01",
+      "title": "Enter the sequence",
+      "prompt": "A slow, controlled cinematic push through the architectural corridor toward the circular portal. The vermilion light gradually opens into warm ivory daylight. Preserve the exact one-point perspective, repeated rectangular frames, circular portal, floor seams, materials, and camera axis. Subtle atmospheric haze and restrained light bloom only. No cuts, no camera shake, no new objects, no text.",
+      "first_frame": "public/frames/portal-first.png",
+      "last_frame": "public/frames/portal-last.png",
+      "duration": 5,
+      "resolution": "720p",
+      "aspect_ratio": "16:9",
+      "negative_prompt": "flicker, warped text, distorted layout, geometry drift, camera shake",
+      "copy": {
+        "en-US": {
+          "headline": "Turn scrolling into cinema.",
+          "body": "Plan the story, hold every frame, and build the result in your frontend.",
+          "cta": "Start the sequence"
+        },
+        "ru-RU": {
+          "headline": "Превращаем скролл в кино.",
+          "body": "Продумайте историю, удерживайте каждый кадр и собирайте результат в своем frontend.",
+          "cta": "Начать сцену"
+        }
+      }
+    }
+  ]
+}

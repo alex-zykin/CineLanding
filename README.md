@@ -6,6 +6,12 @@ CineLanding is an open source CLI and agent plugin for landing pages with cinema
 
 There is no hosted editor, account system, billing layer, or deployment service in this repository. Those may be built later around the same core. The project domain is [cinelanding.ru](https://cinelanding.ru).
 
+## Live showcase
+
+[Open the CineLanding showcase](https://cinelanding.alexey3484.chatgpt.site). It was made from scratch inside this repository with CineLanding's own project manifest, two original anchor frames, and one reviewed KIE transition. Switch to Russian from the header; the choice is kept in the URL and in your browser.
+
+The implementation lives in [`site/`](site). It is a working example of the same path the plugin is designed to run: frame the idea, validate the scene, review the generated media, and assemble the result in a real frontend.
+
 ## Two ways to start
 
 Every new project requires one of these modes:
