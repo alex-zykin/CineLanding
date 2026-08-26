@@ -1,0 +1,19 @@
+.scratch/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.coverage
+dist/
+build/
+.venv/
+venv/
+.env
+.DS_Store
+Thumbs.db
+
+# Generated CineLanding projects and media
+cinelanding-work/
+*.mp4
+*.mov
+*.webm

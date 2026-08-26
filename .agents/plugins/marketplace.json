@@ -1,0 +1,20 @@
+{
+  "name": "cinelanding",
+  "interface": {
+    "displayName": "CineLanding"
+  },
+  "plugins": [
+    {
+      "name": "cinelanding",
+      "source": {
+        "source": "local",
+        "path": "./plugins/cinelanding"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

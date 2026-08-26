@@ -1,0 +1,18 @@
+{
+  "name": "cinelanding",
+  "description": "Agent toolkit for cinematic scroll-driven landing pages with KIE.ai.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Alex Zykin"
+  },
+  "homepage": "https://cinelanding.ru",
+  "repository": "https://github.com/alex-zykin/CineLanding",
+  "license": "AGPL-3.0-or-later",
+  "keywords": [
+    "landing-page",
+    "scrollytelling",
+    "scroll-video",
+    "kie-ai",
+    "agent"
+  ]
+}

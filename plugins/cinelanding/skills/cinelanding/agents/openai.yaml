@@ -1,0 +1,4 @@
+interface:
+  display_name: "CineLanding"
+  short_description: "Build cinematic scroll-driven landing pages"
+  default_prompt: "Use $cinelanding to turn this website into a cinematic scroll-driven landing page."

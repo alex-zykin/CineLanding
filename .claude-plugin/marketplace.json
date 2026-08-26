@@ -1,0 +1,14 @@
+{
+  "name": "cinelanding",
+  "owner": {
+    "name": "Alex Zykin"
+  },
+  "plugins": [
+    {
+      "name": "cinelanding",
+      "source": "./plugins/cinelanding",
+      "description": "Build cinematic scroll-driven landing pages with a provider-neutral workflow and KIE.ai generation.",
+      "version": "0.1.0"
+    }
+  ]
+}
