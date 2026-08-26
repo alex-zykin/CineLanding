@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cinelanding"
-version = "0.1.0"
-description = "Agent-first toolkit for cinematic scroll-driven landing pages"
+version = "0.2.0"
+description = "CLI and agent workflow for landing pages with cinematic scroll-linked transitions"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "AGPL-3.0-or-later" }

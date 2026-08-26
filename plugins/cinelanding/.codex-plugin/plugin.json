@@ -1,7 +1,7 @@
 {
   "name": "cinelanding",
-  "version": "0.1.0",
-  "description": "Agent toolkit for building cinematic scroll-driven landing pages with KIE.ai.",
+  "version": "0.2.0",
+  "description": "CLI and agent workflow for landing pages with cinematic scroll-linked transitions.",
   "author": {
     "name": "Alex Zykin",
     "url": "https://github.com/alex-zykin"
@@ -19,15 +19,15 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "CineLanding",
-    "shortDescription": "Build cinematic landing pages with an agent.",
-    "longDescription": "CineLanding gives coding agents a safe, repeatable workflow for planning, generating, validating, and assembling scroll-driven landing pages. It includes a dependency-free CLI, mock mode, and a server-side KIE.ai adapter.",
+    "shortDescription": "Build landing pages with cinematic transitions.",
+    "longDescription": "CineLanding helps an agent redesign a public website or start from a brief. It includes a dependency-free CLI, free mock checks, an optional KIE.ai adapter, media processing, and instructions for building the result in a target frontend.",
     "developerName": "Alex Zykin",
     "category": "Developer Tools",
     "capabilities": ["Interactive", "Write"],
     "websiteURL": "https://cinelanding.ru",
     "defaultPrompt": [
-      "Turn this website into a cinematic landing page.",
-      "Create a CineLanding project from these assets.",
+      "Redesign this website as a cinematic landing page.",
+      "Create a landing page from this brief and these assets.",
       "Validate this CineLanding project before generation."
     ],
     "brandColor": "#E65C2E"

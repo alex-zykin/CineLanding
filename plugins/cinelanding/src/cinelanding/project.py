@@ -36,6 +36,7 @@ def create_project(
     locales: List[str],
     default_locale: str,
     mode: str,
+    motion_style: str,
     audience: str,
     force: bool = False,
 ) -> Tuple[Path, Project]:
@@ -59,6 +60,7 @@ def create_project(
         default_locale=default_locale,
         locales=locales,
         mode=mode,
+        motion_style=motion_style,
         source_url=source_url,
         audience=audience,
         created_at=utc_now(),
@@ -150,6 +152,7 @@ def project_readiness(root: Path, project: Project) -> Dict[str, Any]:
         "default_locale": project.default_locale,
         "locales": project.locales,
         "mode": project.mode,
+        "motion_style": project.motion_style,
         "ready": bool(scene_plans) and all(item["ready"] for item in scene_plans),
         "paid_calls": len(scene_plans),
         "scenes": scene_plans,

@@ -7,8 +7,8 @@
     {
       "name": "cinelanding",
       "source": "./plugins/cinelanding",
-      "description": "Build cinematic scroll-driven landing pages with a provider-neutral workflow and KIE.ai generation.",
-      "version": "0.1.0"
+      "description": "Redesign a website or build from a brief with cinematic transitions and optional KIE.ai generation.",
+      "version": "0.2.0"
     }
   ]
 }

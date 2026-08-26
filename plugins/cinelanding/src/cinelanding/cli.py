@@ -9,6 +9,7 @@ import sys
 import time
 from typing import Any, Dict, Optional, Sequence
 
+from . import __version__
 from .errors import CineLandingError, ProjectError, SubmissionUnknownError
 from .media import create_mock_video, doctor, download_results, extract_frames
 from .models import GenerationJob, VideoRequest, utc_now
@@ -69,7 +70,7 @@ def cmd_doctor(_: argparse.Namespace) -> int:
 
 
 def cmd_new(args: argparse.Namespace) -> int:
-    locales = args.locale or ["en-US", "ru-RU"]
+    locales = args.locale or ["en-US"]
     default_locale = args.default_locale or locales[0]
     root, project = create_project(
         destination=args.path,
@@ -78,6 +79,7 @@ def cmd_new(args: argparse.Namespace) -> int:
         locales=locales,
         default_locale=default_locale,
         mode=args.mode,
+        motion_style=args.motion_style,
         audience=args.audience,
         force=args.force,
     )
@@ -213,7 +215,7 @@ def cmd_jobs(args: argparse.Namespace) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="cinelanding", description="CineLanding agent CLI")
-    parser.add_argument("--version", action="version", version="CineLanding 0.1.0")
+    parser.add_argument("--version", action="version", version=f"CineLanding {__version__}")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     doctor_parser = subparsers.add_parser("doctor", help="Check local tooling and provider configuration")
@@ -222,19 +224,30 @@ def build_parser() -> argparse.ArgumentParser:
     new_parser = subparsers.add_parser("new", help="Create a CineLanding project manifest")
     new_parser.add_argument("path", type=Path)
     new_parser.add_argument("--name", required=True)
-    new_parser.add_argument("--url")
+    new_parser.add_argument("--url", help="Existing site URL; required only in redesign mode")
     new_parser.add_argument(
         "--locale",
         choices=["en-US", "ru-RU"],
         action="append",
-        help="Visible-copy locale; repeat to select both (default: en-US and ru-RU)",
+        help="Visible-copy locale; repeat to add Russian (default: en-US)",
     )
     new_parser.add_argument(
         "--default-locale",
         choices=["en-US", "ru-RU"],
         help="Primary locale (default: first --locale, otherwise en-US)",
     )
-    new_parser.add_argument("--mode", choices=["journey", "reveal"], default="journey")
+    new_parser.add_argument(
+        "--mode",
+        choices=["redesign", "from-scratch"],
+        required=True,
+        help="Redesign an existing site or start from a brief and assets",
+    )
+    new_parser.add_argument(
+        "--motion-style",
+        choices=["journey", "reveal"],
+        default="journey",
+        help="Visual transition style (default: journey)",
+    )
     new_parser.add_argument("--audience", default="general")
     new_parser.add_argument("--force", action="store_true")
     new_parser.set_defaults(func=cmd_new)

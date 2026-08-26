@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 from urllib.parse import quote
 
+from .. import __version__
 from ..errors import ConfigurationError, ProviderError
 from ..models import GenerationJob, VideoRequest, is_http_url, utc_now
 from .base import VideoProvider
@@ -50,7 +51,7 @@ class KieProvider(VideoProvider):
         return {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
-            "User-Agent": "CineLanding/0.1.0 (https://cinelanding.ru)",
+            "User-Agent": f"CineLanding/{__version__} (https://cinelanding.ru)",
         }
 
     def credits(self) -> float:

@@ -1,7 +1,7 @@
 {
   "name": "cinelanding",
-  "description": "Agent toolkit for cinematic scroll-driven landing pages with KIE.ai.",
-  "version": "0.1.0",
+  "description": "CLI and agent workflow for landing pages with cinematic scroll-linked transitions.",
+  "version": "0.2.0",
   "author": {
     "name": "Alex Zykin"
   },

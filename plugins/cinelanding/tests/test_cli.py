@@ -26,7 +26,8 @@ def create_ready_project(parent: Path) -> Path:
         source_url="https://example.com",
         locales=["en-US", "ru-RU"],
         default_locale="en-US",
-        mode="journey",
+        mode="redesign",
+        motion_style="journey",
         audience="general",
     )
     (root / "inputs" / "scene-01-first.png").write_bytes(b"first")
@@ -42,15 +43,84 @@ def run_cli(*arguments: str) -> tuple[int, dict]:
 
 
 class CliSubmissionTests(unittest.TestCase):
-    def test_new_defaults_to_both_locales(self) -> None:
+    def test_new_defaults_to_english_only(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             destination = Path(temporary) / "demo"
-            exit_code, output = run_cli("new", str(destination), "--name", "Demo")
+            exit_code, output = run_cli(
+                "new",
+                str(destination),
+                "--name",
+                "Demo",
+                "--mode",
+                "from-scratch",
+            )
+
+            self.assertEqual(exit_code, 0)
+            project = output["project"]["project"]
+            self.assertEqual(project["locales"], ["en-US"])
+            self.assertEqual(project["default_locale"], "en-US")
+            self.assertEqual(project["mode"], "from-scratch")
+            self.assertEqual(project["motion_style"], "journey")
+
+    def test_new_supports_russian_as_an_additional_locale(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            destination = Path(temporary) / "demo"
+            exit_code, output = run_cli(
+                "new",
+                str(destination),
+                "--name",
+                "Demo",
+                "--mode",
+                "from-scratch",
+                "--locale",
+                "en-US",
+                "--locale",
+                "ru-RU",
+                "--motion-style",
+                "reveal",
+            )
 
             self.assertEqual(exit_code, 0)
             project = output["project"]["project"]
             self.assertEqual(project["locales"], ["en-US", "ru-RU"])
-            self.assertEqual(project["default_locale"], "en-US")
+            self.assertEqual(project["motion_style"], "reveal")
+
+    def test_new_requires_mode(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            with self.assertRaises(SystemExit) as raised:
+                run_cli("new", str(Path(temporary) / "demo"), "--name", "Demo")
+
+            self.assertEqual(raised.exception.code, 2)
+
+    def test_redesign_requires_url(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            exit_code, output = run_cli(
+                "new",
+                str(Path(temporary) / "demo"),
+                "--name",
+                "Demo",
+                "--mode",
+                "redesign",
+            )
+
+            self.assertEqual(exit_code, 2)
+            self.assertIn("redesign mode requires source_url", output["error"])
+
+    def test_from_scratch_rejects_url(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            exit_code, output = run_cli(
+                "new",
+                str(Path(temporary) / "demo"),
+                "--name",
+                "Demo",
+                "--mode",
+                "from-scratch",
+                "--url",
+                "https://example.com",
+            )
+
+            self.assertEqual(exit_code, 2)
+            self.assertIn("from-scratch mode does not accept source_url", output["error"])
 
     def test_mock_submission_is_reused_by_request_fingerprint(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

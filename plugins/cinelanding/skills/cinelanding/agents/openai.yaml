@@ -1,4 +1,4 @@
 interface:
   display_name: "CineLanding"
-  short_description: "Build cinematic scroll-driven landing pages"
-  default_prompt: "Use $cinelanding to turn this website into a cinematic scroll-driven landing page."
+  short_description: "Build landing pages with cinematic transitions"
+  default_prompt: "Use $cinelanding to redesign this website or create a landing page from my brief."

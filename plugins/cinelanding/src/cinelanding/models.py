@@ -12,7 +12,8 @@ from urllib.parse import urlparse
 
 
 SUPPORTED_LOCALES = {"en-US", "ru-RU"}
-SUPPORTED_MODES = {"journey", "reveal"}
+SUPPORTED_MODES = {"redesign", "from-scratch"}
+SUPPORTED_MOTION_STYLES = {"journey", "reveal"}
 SUPPORTED_ASPECT_RATIOS = {"1:1", "4:3", "3:4", "16:9", "9:16", "21:9", "adaptive"}
 SCENE_ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]{0,62}$")
 
@@ -97,27 +98,38 @@ class Project:
     default_locale: str
     locales: List[str]
     mode: str
+    motion_style: str
     source_url: Optional[str]
     audience: str
     created_at: str
     scenes: List[Scene] = field(default_factory=list)
-    schema_version: int = 1
+    schema_version: int = 2
 
     @classmethod
     def from_dict(cls, value: Dict[str, Any]) -> "Project":
         project = value.get("project", value)
         scenes = [Scene.from_dict(item) for item in value.get("scenes", [])]
+        source_url = project.get("source_url") or None
+        schema_version = int(value.get("schema_version", 1))
+        if schema_version == 1:
+            mode = "redesign" if source_url else "from-scratch"
+            motion_style = str(project.get("mode", ""))
+            schema_version = 2
+        else:
+            mode = str(project.get("mode", ""))
+            motion_style = str(project.get("motion_style", ""))
         return cls(
             name=str(project.get("name", "")),
             slug=str(project.get("slug", "")),
             default_locale=str(project.get("default_locale", project.get("locale", ""))),
             locales=[str(item) for item in project.get("locales", [project.get("locale", "")]) if item],
-            mode=str(project.get("mode", "")),
-            source_url=project.get("source_url") or None,
+            mode=mode,
+            motion_style=motion_style,
+            source_url=source_url,
             audience=str(project.get("audience", "")),
             created_at=str(project.get("created_at", "")),
             scenes=scenes,
-            schema_version=int(value.get("schema_version", 1)),
+            schema_version=schema_version,
         )
 
     def to_dict(self) -> Dict[str, Any]:
@@ -129,6 +141,7 @@ class Project:
                 "default_locale": self.default_locale,
                 "locales": self.locales,
                 "mode": self.mode,
+                "motion_style": self.motion_style,
                 "source_url": self.source_url,
                 "audience": self.audience,
                 "created_at": self.created_at,
@@ -138,7 +151,7 @@ class Project:
 
     def validate(self, require_scenes: bool = False) -> List[str]:
         issues: List[str] = []
-        if self.schema_version != 1:
+        if self.schema_version != 2:
             issues.append(f"unsupported schema_version {self.schema_version}")
         if not self.name.strip():
             issues.append("project name is required")
@@ -155,6 +168,12 @@ class Project:
             issues.append("default_locale must be present in locales")
         if self.mode not in SUPPORTED_MODES:
             issues.append(f"mode must be one of {sorted(SUPPORTED_MODES)}")
+        if self.motion_style not in SUPPORTED_MOTION_STYLES:
+            issues.append(f"motion_style must be one of {sorted(SUPPORTED_MOTION_STYLES)}")
+        if self.mode == "redesign" and not self.source_url:
+            issues.append("redesign mode requires source_url")
+        if self.mode == "from-scratch" and self.source_url:
+            issues.append("from-scratch mode does not accept source_url")
         if self.source_url and not is_http_url(self.source_url):
             issues.append("source_url must be an http(s) URL")
         if require_scenes and not self.scenes:

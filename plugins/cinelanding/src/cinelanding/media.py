@@ -10,6 +10,7 @@ from typing import Any, Dict, List
 from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
+from . import __version__
 from .errors import ProjectError, ProviderError
 from .models import SCENE_ID_PATTERN
 from .project import atomic_write_json
@@ -175,7 +176,7 @@ def download_results(root: Path, task_id: str, scene_id: str, urls: List[str]) -
         if output.is_file() and output.stat().st_size > 0:
             downloaded.append(output)
             continue
-        request = Request(url, headers={"User-Agent": "CineLanding/0.1.0"})
+        request = Request(url, headers={"User-Agent": f"CineLanding/{__version__}"})
         try:
             with urlopen(request, timeout=120) as response:
                 final_url = urlparse(response.geturl())
