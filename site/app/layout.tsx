@@ -22,8 +22,8 @@ const mono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://cinelanding.ru'),
-  title: 'CineLanding | Turn scrolling into cinema',
-  description: 'An open source workflow for cinematic, scroll-linked landing pages.',
+  title: 'ORBIT — Independent cinema | A CineLanding showcase',
+  description: 'Step inside ORBIT, a fictional independent cinema reimagined with CineLanding.',
   alternates: {
     canonical: '/',
   },
@@ -34,21 +34,21 @@ export const metadata: Metadata = {
     type: 'website',
     url: '/',
     siteName: 'CineLanding',
-    title: 'CineLanding | Turn scrolling into cinema',
-    description: 'An open source workflow for cinematic, scroll-linked landing pages.',
+    title: 'ORBIT — Independent cinema | A CineLanding showcase',
+    description: 'Step inside ORBIT, a fictional independent cinema reimagined with CineLanding.',
     images: [
       {
         url: '/og.png',
         width: 1730,
         height: 909,
-        alt: 'CineLanding — Turn scrolling into cinema.',
+        alt: 'CineLanding — a cinematic, scroll-directed landing page workflow.',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'CineLanding | Turn scrolling into cinema',
-    description: 'An open source workflow for cinematic, scroll-linked landing pages.',
+    title: 'ORBIT — Independent cinema | A CineLanding showcase',
+    description: 'Step inside ORBIT, a fictional independent cinema reimagined with CineLanding.',
     images: ['/og.png'],
   },
 };

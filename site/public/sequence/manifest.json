@@ -1,0 +1,9 @@
+{
+ "frames": 120,
+ "pattern": "frame_%04d.jpg",
+ "width": 1280,
+ "height": 720,
+ "source": "portal-sequence.mp4",
+ "source_fps": 24.0,
+ "source_duration": 5.04
+}

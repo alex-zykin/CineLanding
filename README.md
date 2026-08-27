@@ -8,9 +8,9 @@ There is no hosted editor, account system, billing layer, or deployment service 
 
 ## Live showcase
 
-[Open the CineLanding showcase](https://cinelanding.alexey3484.chatgpt.site). It was made from scratch inside this repository with CineLanding's own project manifest, two original anchor frames, and one reviewed KIE transition. Switch to Russian from the header; the choice is kept in the URL and in your browser.
+[Open the ORBIT showcase](https://cinelanding.alexey3484.chatgpt.site). ORBIT is a fictional independent cinema presented as a finished client landing page rather than a product tour. Its full-screen opening maps page scroll to 120 extracted frames from a reviewed KIE transition. Switch to Russian from the header; the choice is kept in the URL and in your browser.
 
-The implementation lives in [`site/`](site). It is a working example of the same path the plugin is designed to run: frame the idea, validate the scene, review the generated media, and assemble the result in a real frontend.
+The implementation lives in [`site/`](site). It shows the intended end result of the workflow: semantic page content layered over a progressively loaded canvas sequence, a useful reduced-motion state, and a complete responsive frontend. The final section discloses that ORBIT is fictional and links back to CineLanding.
 
 ## Two ways to start
 

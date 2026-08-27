@@ -2,149 +2,204 @@
 
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import ScrollSequence from './scroll-sequence';
 
 type Locale = 'en' | 'ru';
 
 const content = {
   en: {
-    pageTitle: 'CineLanding | Turn scrolling into cinema',
-    pageDescription: 'An open source workflow for cinematic, scroll-linked landing pages.',
-    nav: ['Modes', 'Sequence', 'Process'],
-    homeLabel: 'CineLanding home',
+    pageTitle: 'ORBIT — Independent cinema | A CineLanding showcase',
+    pageDescription: 'Step inside ORBIT, a fictional independent cinema reimagined with CineLanding.',
+    brand: 'ORBIT',
+    brandNote: 'Picture house',
+    homeLabel: 'ORBIT home',
     navLabel: 'Primary navigation',
-    stageLabel: 'CineLanding generated transition',
-    settingsLabel: 'Project settings',
-    firstFrameAlt: 'Dark corridor with a vermilion portal',
-    lastFrameAlt: 'Bright corridor with an ivory portal',
+    nav: [
+      ['Programme', '#programme'],
+      ['The house', '#house'],
+      ['Visit', '#visit'],
+    ],
     switchLabel: 'Переключить на русский',
-    eyebrow: 'Agent-directed landing pages',
-    heroTitle: <>Turn scrolling<br />into <em>cinema.</em></>,
-    heroIntro: 'Plan the story. Hold every frame. Build a landing page that moves with intent, not with a template.',
-    heroPrimary: 'Watch the sequence',
-    source: 'View source',
-    scroll: 'Scroll to direct',
-    sceneLabel: 'Scene 01',
-    frameCaption: 'Hold the geometry.',
-    manifest: ['mode: from-scratch', 'motion: journey', 'locale: en-US / ru-RU', 'provider: KIE'],
-    sequenceKicker: 'The live cut',
-    sequenceTitle: <>One visual idea.<br /><em>Three exact states.</em></>,
-    sequenceBody: 'CineLanding keeps the first frame, generated transition, and final frame in one reviewed sequence. Your copy stays in the DOM. The motion stays in the media.',
-    sequenceFacts: [
-      ['01', 'Anchor', 'A precise opening composition'],
-      ['02', 'Generate', 'A controlled KIE transition'],
-      ['03', 'Assemble', 'A real page in your frontend'],
-    ],
-    frames: ['First frame', 'Generated cut', 'Last frame'],
-    modesKicker: 'Choose the starting point',
-    modesTitle: 'Two modes. One production path.',
-    modes: [
+    showcaseLabel: 'A cinematic walk through ORBIT cinema',
+    showcaseScroll: 'Scroll to enter',
+    showcaseFrame: 'Scroll-directed sequence',
+    showcaseBeats: [
       {
-        number: '01',
-        name: 'Redesign',
-        command: '--mode redesign',
-        body: 'Start with a public website. The agent studies its structure, facts, and visual rhythm, then rebuilds the experience without blindly copying the source.',
-        input: 'Input: website URL',
+        kicker: 'Independent cinema · open nightly',
+        title: <>Disappear<br />for a while.</>,
+        body: 'Independent films, restored classics, and stories that stay with you—shown the way they were meant to be seen.',
+        align: 'left',
+        action: { label: 'See what’s on', href: '#programme' },
       },
       {
-        number: '02',
-        name: 'From scratch',
-        command: '--mode from-scratch',
-        body: 'Start with a brief, approved copy, and supplied assets. The agent shapes the page outline, anchor frames, motion, and final implementation.',
-        input: 'Input: brief + assets',
+        kicker: 'The house',
+        title: <>Built for the<br />big screen.</>,
+        body: 'One auditorium. No bad rows. A room designed to let the street outside disappear.',
+        align: 'right',
+      },
+      {
+        kicker: 'The programme',
+        title: <>Chosen,<br />not filled.</>,
+        body: 'New voices, late-night cult films, director conversations, and classics returned to the screen.',
+        align: 'left',
+      },
+      {
+        kicker: 'The evening',
+        title: <>Stay after<br />the credits.</>,
+        body: 'Doors open early. The bar stays warm. Here, the film is only the beginning of the night.',
+        align: 'right',
       },
     ],
-    processKicker: 'A small, honest workflow',
-    processTitle: 'From brief to browser.',
-    process: [
-      ['Frame the story', 'Define the audience, page goal, visible copy, and the fewest scenes needed to tell it.'],
-      ['Direct the motion', 'Lock first and last frames, run the free mock path, then approve each paid generation.'],
-      ['Build the page', 'Move the reviewed media into the target frontend, keep text semantic, and test the actual route.'],
-    ],
-    proofKicker: 'Made to be checked',
-    proofTitle: <>Beautiful output.<br />Boring safeguards.</>,
-    proofBody: 'The workflow separates paid calls from planning, records every job, protects against duplicate submissions, and keeps provider keys out of the browser.',
-    proof: [
-      ['25/25', 'core tests passing'],
-      ['0', 'credits used in mock mode'],
-      ['1', 'reviewed call per scene'],
-      ['AGPL', 'source stays open'],
-    ],
-    ctaKicker: 'Open source. Agent ready.',
-    ctaTitle: <>Your next landing<br />starts with a scene.</>,
-    ctaBody: 'Clone CineLanding, choose a mode, and let your coding agent carry the work from the first frame to the finished page.',
-    ctaPrimary: 'Open on GitHub',
-    ctaSecondary: 'Read the workflow',
-    footerNote: 'Built with CineLanding, using CineLanding.',
+    programme: {
+      kicker: 'Now showing · Friday 27',
+      title: <>Chosen for the room,<br /><em>not the algorithm.</em></>,
+      body: 'Three films. One screen. Each programme is assembled by people who still believe a cinema can have a point of view.',
+      booking: 'Choose seats',
+      films: [
+        ['18:30', 'After the Rain', 'Aya Mori · 2026 · 104 min', 'A quiet premiere'],
+        ['21:10', 'A Map of Silence', 'Tomás Vale · 2025 · 118 min', 'Director conversation'],
+        ['23:45', 'Night Shift', 'Lina Bell · 1997 · 96 min', 'Restored 4K'],
+      ],
+    },
+    house: {
+      kicker: 'The house · since 1978',
+      title: <>Everything between<br />you and the screen<br /><em>has been removed.</em></>,
+      body: 'No ads after the lights go down. No glowing menu boards. Just a carefully tuned room, a generous screen, and the few seconds of silence before a film begins.',
+      imageAlt: 'The luminous entrance of the fictional ORBIT cinema',
+      caption: 'Auditorium 01 / doors open 30 minutes before the film',
+      facts: [
+        ['4K', 'laser projection'],
+        ['ATMOS', 'spatial sound'],
+        ['196', 'deep-red seats'],
+        ['7', 'nights a week'],
+      ],
+    },
+    visit: {
+      kicker: 'Before and after the film',
+      title: <>Come for the film.<br /><em>Stay for the night.</em></>,
+      body: 'The bar opens at six with small plates, natural wine, and enough time to argue about the ending. Tickets can be held at the door until fifteen minutes before the screening.',
+      note: 'A fictional address for this showcase',
+      address: <>18 Mercury Lane<br />East Quarter</>,
+      hours: ['Bar from 18:00', 'First film 18:30', 'Last orders 01:00'],
+      action: 'Plan your evening',
+    },
+    before: {
+      kicker: 'A quiet transformation',
+      title: <>The story was always good.<br /><em>The old website just buried it.</em></>,
+      oldLabel: 'Before',
+      oldTitle: 'WELCOME TO ORBIT CINEMA!!!',
+      oldCopy: 'Your local movie theatre on the World Wide Web. Click here for listings, prices and directions.',
+      oldAside: 'Best viewed at 800 × 600',
+      newLabel: 'Now',
+      newCopy: 'Same cinema. Same point of view. A website that finally feels like walking through its doors.',
+    },
+    reveal: {
+      kicker: 'Now for the reveal',
+      title: <>ORBIT is not<br />a real cinema.</>,
+      body: 'It is a fictional client site created with CineLanding to show the finished result: a scroll-directed sequence generated through KIE, semantic page content, and a design that can grow from an outdated website or a blank page.',
+      primary: 'Explore the open source',
+      secondary: 'How it works',
+      demo: 'Fictional showcase · no tickets are sold here',
+    },
+    footer: 'ORBIT was made with CineLanding.',
+    source: 'GitHub',
   },
   ru: {
-    pageTitle: 'CineLanding | Превращаем скролл в кино',
-    pageDescription: 'Открытый процесс создания кинематографичных лендингов со скролл-анимацией.',
-    nav: ['Режимы', 'Сцена', 'Процесс'],
-    homeLabel: 'Главная CineLanding',
+    pageTitle: 'ORBIT — независимый кинотеатр | Демо CineLanding',
+    pageDescription: 'Зайдите в ORBIT — вымышленный независимый кинотеатр, переосмысленный с помощью CineLanding.',
+    brand: 'ORBIT',
+    brandNote: 'Кинозал',
+    homeLabel: 'Главная ORBIT',
     navLabel: 'Основная навигация',
-    stageLabel: 'Переход, созданный CineLanding',
-    settingsLabel: 'Настройки проекта',
-    firstFrameAlt: 'Темный коридор с киноварным порталом',
-    lastFrameAlt: 'Светлый коридор с порталом цвета слоновой кости',
+    nav: [
+      ['Программа', '#programme'],
+      ['Пространство', '#house'],
+      ['Визит', '#visit'],
+    ],
     switchLabel: 'Switch to English',
-    eyebrow: 'Лендинги под режиссурой агента',
-    heroTitle: <>Превращаем<br />скролл в <em>кино.</em></>,
-    heroIntro: 'Продумайте историю. Удерживайте каждый кадр. Соберите лендинг, который движется осмысленно, а не по шаблону.',
-    heroPrimary: 'Смотреть сцену',
-    source: 'Открыть код',
-    scroll: 'Листайте, чтобы начать',
-    sceneLabel: 'Сцена 01',
-    frameCaption: 'Сохраняем геометрию.',
-    manifest: ['режим: с нуля', 'движение: journey', 'язык: en-US / ru-RU', 'провайдер: KIE'],
-    sequenceKicker: 'Готовый переход',
-    sequenceTitle: <>Одна идея.<br /><em>Три точных состояния.</em></>,
-    sequenceBody: 'CineLanding связывает первый кадр, сгенерированный переход и финальный кадр в одну проверенную сцену. Текст остается в DOM, движение живет в медиа.',
-    sequenceFacts: [
-      ['01', 'Опора', 'Точная начальная композиция'],
-      ['02', 'Генерация', 'Управляемый переход KIE'],
-      ['03', 'Сборка', 'Настоящая страница во frontend'],
-    ],
-    frames: ['Первый кадр', 'Готовый переход', 'Последний кадр'],
-    modesKicker: 'Выберите отправную точку',
-    modesTitle: 'Два режима. Один рабочий путь.',
-    modes: [
+    showcaseLabel: 'Кинематографичный проход по кинотеатру ORBIT',
+    showcaseScroll: 'Листайте, чтобы войти',
+    showcaseFrame: 'Покадровая сцена под скроллом',
+    showcaseBeats: [
       {
-        number: '01',
-        name: 'Переработка',
-        command: '--mode redesign',
-        body: 'Начните с публичного сайта. Агент изучит структуру, факты и визуальный ритм, а затем соберет новую версию без слепого копирования исходника.',
-        input: 'На входе: адрес сайта',
+        kicker: 'Независимый кинотеатр · каждый вечер',
+        title: <>Исчезните<br />на пару часов.</>,
+        body: 'Независимое кино, восстановленная классика и истории, которые не отпускают — на большом экране, как и должно быть.',
+        align: 'left',
+        action: { label: 'Что сегодня', href: '#programme' },
       },
       {
-        number: '02',
-        name: 'С нуля',
-        command: '--mode from-scratch',
-        body: 'Начните с брифа, согласованного текста и материалов. Агент подготовит структуру, опорные кадры, движение и конечную реализацию.',
-        input: 'На входе: бриф + материалы',
+        kicker: 'Пространство',
+        title: <>Создан для<br />большого экрана.</>,
+        body: 'Один зал. Плохих рядов нет. Здесь достаточно темноты, чтобы забыть об улице снаружи.',
+        align: 'right',
+      },
+      {
+        kicker: 'Программа',
+        title: <>Выбираем,<br />а не заполняем.</>,
+        body: 'Новые имена, ночные культовые показы, разговоры с режиссёрами и классика, которая возвращается на экран.',
+        align: 'left',
+      },
+      {
+        kicker: 'Вечер',
+        title: <>Останьтесь<br />после титров.</>,
+        body: 'Мы открываемся заранее. В баре тепло. Здесь фильм — только начало вечера.',
+        align: 'right',
       },
     ],
-    processKicker: 'Небольшой честный процесс',
-    processTitle: 'От брифа до браузера.',
-    process: [
-      ['Собрать историю', 'Определить аудиторию, цель, видимый текст и минимальное число сцен для рассказа.'],
-      ['Поставить движение', 'Зафиксировать первый и последний кадры, пройти бесплатный mock и подтвердить каждую платную генерацию.'],
-      ['Собрать страницу', 'Перенести проверенные медиа во frontend, оставить текст семантическим и проверить рабочий маршрут.'],
-    ],
-    proofKicker: 'Можно проверить',
-    proofTitle: <>Красивый результат.<br />Скучные предохранители.</>,
-    proofBody: 'Процесс отделяет планирование от платных вызовов, сохраняет историю задач, защищает от повторной отправки и не отдает ключ провайдера в браузер.',
-    proof: [
-      ['25/25', 'тестов ядра проходят'],
-      ['0', 'кредитов тратит mock'],
-      ['1', 'проверенный вызов на сцену'],
-      ['AGPL', 'исходный код открыт'],
-    ],
-    ctaKicker: 'Открытый код. Готов к агенту.',
-    ctaTitle: <>Следующий лендинг<br />начинается со сцены.</>,
-    ctaBody: 'Клонируйте CineLanding, выберите режим и проведите работу вместе с coding-агентом от первого кадра до готовой страницы.',
-    ctaPrimary: 'Открыть GitHub',
-    ctaSecondary: 'Читать процесс',
-    footerNote: 'Сделано в CineLanding с помощью CineLanding.',
+    programme: {
+      kicker: 'Сегодня · пятница, 27-е',
+      title: <>Для этого зала,<br /><em>а не для алгоритма.</em></>,
+      body: 'Три фильма. Один экран. Программу собирают люди, которые всё ещё верят: у кинотеатра может быть собственный взгляд.',
+      booking: 'Выбрать места',
+      films: [
+        ['18:30', 'После дождя', 'Ая Мори · 2026 · 104 мин', 'Тихая премьера'],
+        ['21:10', 'Карта тишины', 'Томас Вале · 2025 · 118 мин', 'Разговор с режиссёром'],
+        ['23:45', 'Ночная смена', 'Лина Белл · 1997 · 96 мин', 'Реставрация 4K'],
+      ],
+    },
+    house: {
+      kicker: 'Пространство · с 1978 года',
+      title: <>Между вами<br />и экраном<br /><em>ничего лишнего.</em></>,
+      body: 'После начала — никакой рекламы. Никаких светящихся меню. Только настроенный зал, большой экран и несколько секунд тишины перед первым кадром.',
+      imageAlt: 'Светящийся вход в вымышленный кинотеатр ORBIT',
+      caption: 'Зал 01 / двери открываются за 30 минут до фильма',
+      facts: [
+        ['4K', 'лазерная проекция'],
+        ['ATMOS', 'объёмный звук'],
+        ['196', 'кресел'],
+        ['7', 'вечеров в неделю'],
+      ],
+    },
+    visit: {
+      kicker: 'До и после фильма',
+      title: <>Приходите на фильм.<br /><em>Оставайтесь ради вечера.</em></>,
+      body: 'Бар открывается в шесть: небольшое меню, натуральное вино и время поспорить о финале. Билет можно забрать у входа не позднее чем за пятнадцать минут до сеанса.',
+      note: 'Вымышленный адрес для этой демонстрации',
+      address: <>Меркурий-лейн, 18<br />Восточный квартал</>,
+      hours: ['Бар с 18:00', 'Первый сеанс 18:30', 'Последний заказ 01:00'],
+      action: 'Спланировать вечер',
+    },
+    before: {
+      kicker: 'Тихое преображение',
+      title: <>История всегда была хорошей.<br /><em>Старый сайт просто мешал её увидеть.</em></>,
+      oldLabel: 'Раньше',
+      oldTitle: 'ДОБРО ПОЖАЛОВАТЬ В КИНОТЕАТР ORBIT!!!',
+      oldCopy: 'Ваш кинотеатр во Всемирной паутине. Нажмите сюда: расписание, цены и схема проезда.',
+      oldAside: 'Лучше смотреть в разрешении 800 × 600',
+      newLabel: 'Теперь',
+      newCopy: 'Тот же кинотеатр. Тот же характер. Сайт, который наконец похож на шаг через его двери.',
+    },
+    reveal: {
+      kicker: 'А теперь — развязка',
+      title: <>ORBIT — не<br />настоящий кинотеатр.</>,
+      body: 'Это вымышленный клиентский сайт, собранный с помощью CineLanding. Так выглядит конечный результат: покадровая сцена от KIE под управлением скролла, живой текст в HTML и дизайн, который можно вырастить из устаревшего сайта или с чистого листа.',
+      primary: 'Открыть исходный код',
+      secondary: 'Как это работает',
+      demo: 'Вымышленная демонстрация · билеты здесь не продаются',
+    },
+    footer: 'ORBIT сделан с помощью CineLanding.',
+    source: 'GitHub',
   },
 } as const;
 
@@ -175,7 +230,7 @@ export default function Home() {
   useEffect(() => {
     if (!localeReady) return;
 
-    document.documentElement.lang = locale === 'en' ? 'en' : 'ru';
+    document.documentElement.lang = locale;
     document.title = t.pageTitle;
     document.querySelector('meta[name="description"]')?.setAttribute('content', t.pageDescription);
     window.localStorage.setItem('cinelanding-locale', locale);
@@ -192,9 +247,11 @@ export default function Home() {
       const progress = available > 0 ? Math.min(window.scrollY / available, 1) : 0;
       document.documentElement.style.setProperty('--page-progress', `${progress * 100}%`);
     };
+
     updateProgress();
     window.addEventListener('scroll', updateProgress, { passive: true });
     window.addEventListener('resize', updateProgress);
+
     return () => {
       window.removeEventListener('scroll', updateProgress);
       window.removeEventListener('resize', updateProgress);
@@ -205,14 +262,12 @@ export default function Home() {
     <main className="site-shell">
       <header className="site-header">
         <a className="brand" href="#top" aria-label={t.homeLabel}>
-          <span className="brand-mark" aria-hidden="true">CL</span>
-          <span>CineLanding</span>
+          <span className="brand-mark" aria-hidden="true">O</span>
+          <span className="brand-copy"><strong>{t.brand}</strong><small>{t.brandNote}</small></span>
         </a>
 
         <nav className="site-nav" aria-label={t.navLabel}>
-          <a href="#modes">{t.nav[0]}</a>
-          <a href="#sequence">{t.nav[1]}</a>
-          <a href="#process">{t.nav[2]}</a>
+          {t.nav.map(([label, href]) => <a href={href} key={href}>{label}</a>)}
         </nav>
 
         <button
@@ -227,172 +282,132 @@ export default function Home() {
         <span className="page-progress" aria-hidden="true" />
       </header>
 
-      <section className="hero" id="top">
-        <div className="hero-copy">
-          <p className="eyebrow"><span /> {t.eyebrow}</p>
-          <h1>{t.heroTitle}</h1>
-          <p className="hero-intro">{t.heroIntro}</p>
-          <div className="hero-actions">
-            <a className="button button-primary" href="#sequence">{t.heroPrimary}</a>
-            <a className="button button-text" href={githubUrl} target="_blank" rel="noreferrer">
-              {t.source} <span aria-hidden="true">↗</span>
-            </a>
-          </div>
+      <ScrollSequence
+        id="top"
+        ariaLabel={t.showcaseLabel}
+        beats={t.showcaseBeats}
+        scrollLabel={t.showcaseScroll}
+        frameLabel={t.showcaseFrame}
+      />
+
+      <section className="programme-section" id="programme">
+        <div className="section-intro reveal">
+          <p className="eyebrow">{t.programme.kicker}</p>
+          <h2>{t.programme.title}</h2>
+          <p className="lede">{t.programme.body}</p>
         </div>
 
-        <div className="hero-stage" aria-label={t.stageLabel}>
-          <div className="film-label film-label-top">
-            <span>{t.sceneLabel}</span><span>16:9</span><span>KIE / 720P</span>
-          </div>
-          <div className="film-frame">
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              poster="/frames/portal-first.png"
-              aria-hidden="true"
-            >
-              <source src="/media/portal-sequence.mp4" type="video/mp4" />
-            </video>
-            <div className="frame-vignette" />
-            <div className="frame-caption">
-              <span>First → last</span>
-              <strong>{t.frameCaption}</strong>
-            </div>
-          </div>
-          <div className="film-label film-label-bottom">
-            <span>00:00:01</span><span className="timeline"><i /></span><span>00:00:05</span>
-          </div>
-        </div>
-
-        <div className="scroll-cue" aria-hidden="true"><span>{t.scroll}</span><i /></div>
-      </section>
-
-      <aside className="manifest-strip" aria-label={t.settingsLabel}>
-        {t.manifest.map((item) => <span key={item}>{item}</span>)}
-      </aside>
-
-      <section className="sequence-section" id="sequence">
-        <div className="sequence-copy reveal">
-          <p className="section-kicker">{t.sequenceKicker}</p>
-          <h2>{t.sequenceTitle}</h2>
-          <p className="section-body">{t.sequenceBody}</p>
-          <div className="sequence-facts">
-            {t.sequenceFacts.map(([number, title, detail]) => (
-              <div className="sequence-fact" key={number}>
-                <span>{number}</span>
-                <strong>{title}</strong>
-                <p>{detail}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="sequence-media reveal">
-          <div className="sequence-track" aria-hidden="true"><i /></div>
-          <figure className="sequence-frame sequence-frame-first">
-            <Image
-              src="/frames/portal-first.png"
-              alt={t.firstFrameAlt}
-              width={1730}
-              height={973}
-              sizes="(max-width: 980px) 100vw, 48vw"
-            />
-            <figcaption><span>01</span>{t.frames[0]}</figcaption>
-          </figure>
-          <figure className="sequence-frame sequence-frame-video">
-            <video muted autoPlay loop playsInline poster="/frames/portal-first.png" aria-hidden="true">
-              <source src="/media/portal-sequence.mp4" type="video/mp4" />
-            </video>
-            <figcaption><span>02</span>{t.frames[1]}</figcaption>
-          </figure>
-          <figure className="sequence-frame sequence-frame-last">
-            <Image
-              src="/frames/portal-last.png"
-              alt={t.lastFrameAlt}
-              width={1730}
-              height={973}
-              sizes="(max-width: 980px) 100vw, 48vw"
-            />
-            <figcaption><span>03</span>{t.frames[2]}</figcaption>
-          </figure>
-        </div>
-      </section>
-
-      <section className="modes-section" id="modes">
-        <div className="section-heading reveal">
-          <p className="section-kicker">{t.modesKicker}</p>
-          <h2>{t.modesTitle}</h2>
-        </div>
-        <div className="modes-grid">
-          {t.modes.map((mode, index) => (
-            <article className={`mode-panel mode-panel-${index + 1} reveal`} key={mode.command}>
-              <div className="mode-topline"><span>{mode.number}</span><code>{mode.command}</code></div>
-              <h3>{mode.name}</h3>
-              <p>{mode.body}</p>
-              <footer><span>{mode.input}</span><i aria-hidden="true">↗</i></footer>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="process-section" id="process">
-        <div className="process-heading reveal">
-          <p className="section-kicker">{t.processKicker}</p>
-          <h2>{t.processTitle}</h2>
-        </div>
-        <ol className="process-list">
-          {t.process.map(([title, body], index) => (
-            <li className="process-step reveal" key={title}>
-              <span className="process-number">0{index + 1}</span>
-              <h3>{title}</h3>
-              <p>{body}</p>
-              <span className="process-dot" aria-hidden="true" />
+        <ol className="film-list">
+          {t.programme.films.map(([time, title, detail, note], index) => (
+            <li className="film-row reveal" key={`${time}-${title}`}>
+              <span className="film-index">0{index + 1}</span>
+              <time>{time}</time>
+              <div><h3>{title}</h3><p>{detail}</p></div>
+              <span className="film-note">{note}</span>
+              <a href="#visit" aria-label={`${t.programme.booking}: ${title}`}><span>{t.programme.booking}</span><b aria-hidden="true">↗</b></a>
             </li>
           ))}
         </ol>
-        <div className="command-line reveal">
-          <span aria-hidden="true">$</span>
-          <code>{'cinelanding new ./project --name "My landing" --mode from-scratch --motion-style journey'}</code>
-          <a href={githubUrl} target="_blank" rel="noreferrer" aria-label={t.source}>↗</a>
-        </div>
       </section>
 
-      <section className="proof-section">
-        <div className="proof-copy reveal">
-          <p className="section-kicker">{t.proofKicker}</p>
-          <h2>{t.proofTitle}</h2>
-          <p className="section-body">{t.proofBody}</p>
+      <div className="type-ribbon" aria-hidden="true">
+        <span>PICTURES NEED DARKNESS</span><i>●</i><span>STORIES NEED A ROOM</span><i>●</i><span>ORBIT / EAST QUARTER</span>
+      </div>
+
+      <section className="house-section" id="house">
+        <div className="house-copy reveal">
+          <p className="eyebrow">{t.house.kicker}</p>
+          <h2>{t.house.title}</h2>
+          <p className="lede">{t.house.body}</p>
         </div>
-        <div className="proof-grid">
-          {t.proof.map(([value, label]) => (
-            <div className="proof-item reveal" key={value + label}>
+
+        <figure className="house-visual reveal">
+          <Image
+            src="/sequence/frame_0086.jpg"
+            alt={t.house.imageAlt}
+            fill
+            sizes="(max-width: 800px) 100vw, 58vw"
+          />
+          <span className="house-aperture" aria-hidden="true" />
+          <figcaption>{t.house.caption}</figcaption>
+        </figure>
+
+        <div className="house-facts">
+          {t.house.facts.map(([value, label]) => (
+            <div className="house-fact reveal" key={value}>
               <strong>{value}</strong><span>{label}</span>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="cta-section">
-        <div className="cta-orbit cta-orbit-one" aria-hidden="true" />
-        <div className="cta-orbit cta-orbit-two" aria-hidden="true" />
-        <div className="cta-content reveal">
-          <p className="section-kicker">{t.ctaKicker}</p>
-          <h2>{t.ctaTitle}</h2>
-          <p>{t.ctaBody}</p>
-          <div className="hero-actions cta-actions">
-            <a className="button button-light" href={githubUrl} target="_blank" rel="noreferrer">{t.ctaPrimary}</a>
-            <a className="button button-text button-text-light" href={`${githubUrl}#create-a-project`} target="_blank" rel="noreferrer">{t.ctaSecondary} ↗</a>
+      <section className="visit-section" id="visit">
+        <div className="visit-heading reveal">
+          <p className="eyebrow">{t.visit.kicker}</p>
+          <h2>{t.visit.title}</h2>
+        </div>
+        <div className="visit-copy reveal">
+          <p>{t.visit.body}</p>
+          <a className="round-action" href="#visit-card" aria-label={t.visit.action}><span>{t.visit.action}</span><b aria-hidden="true">↓</b></a>
+        </div>
+        <article className="ticket-card reveal" id="visit-card">
+          <div className="ticket-topline"><span>ORBIT</span><span>ADMIT ONE</span></div>
+          <div className="ticket-address">{t.visit.address}</div>
+          <ul>{t.visit.hours.map((line) => <li key={line}>{line}</li>)}</ul>
+          <p>{t.visit.note}</p>
+          <div className="ticket-code" aria-hidden="true">010 110 111 100 011</div>
+        </article>
+      </section>
+
+      <section className="before-section">
+        <div className="before-heading reveal">
+          <p className="eyebrow">{t.before.kicker}</p>
+          <h2>{t.before.title}</h2>
+        </div>
+        <div className="before-grid">
+          <article className="old-browser reveal">
+            <div className="browser-bar"><i /><i /><i /><span>orbitcinema.net/index.html</span></div>
+            <div className="old-site">
+              <span>{t.before.oldLabel}</span>
+              <p className="old-stars" aria-hidden="true">✦ ✧ ✦ ✧ ✦</p>
+              <h3>{t.before.oldTitle}</h3>
+              <p>{t.before.oldCopy}</p>
+              <button type="button">ENTER SITE</button>
+              <small>{t.before.oldAside}</small>
+            </div>
+          </article>
+          <article className="now-card reveal">
+            <span>{t.before.newLabel}</span>
+            <div className="now-frame">
+              <Image src="/sequence/frame_0119.jpg" alt="" fill sizes="(max-width: 800px) 100vw, 45vw" />
+              <b>ORBIT</b>
+            </div>
+            <p>{t.before.newCopy}</p>
+          </article>
+        </div>
+      </section>
+
+      <section className="reveal-section" id="about">
+        <div className="reveal-rings" aria-hidden="true"><i /><i /><i /></div>
+        <div className="reveal-content reveal">
+          <p className="eyebrow">{t.reveal.kicker}</p>
+          <h2>{t.reveal.title}</h2>
+          <p>{t.reveal.body}</p>
+          <div className="reveal-actions">
+            <a className="button button-primary" href={githubUrl} target="_blank" rel="noreferrer">{t.reveal.primary}<span aria-hidden="true">↗</span></a>
+            <a className="button button-ghost" href={`${githubUrl}#readme`} target="_blank" rel="noreferrer">{t.reveal.secondary}<span aria-hidden="true">↗</span></a>
           </div>
+          <small>{t.reveal.demo}</small>
         </div>
       </section>
 
       <footer className="site-footer">
-        <div className="brand"><span className="brand-mark brand-mark-light" aria-hidden="true">CL</span><span>CineLanding</span></div>
-        <p>{t.footerNote}</p>
-        <div><a href={githubUrl}>GitHub</a><span>© 2026</span></div>
+        <a className="brand footer-brand" href="#top" aria-label={t.homeLabel}>
+          <span className="brand-mark" aria-hidden="true">O</span>
+          <span className="brand-copy"><strong>{t.brand}</strong><small>{t.brandNote}</small></span>
+        </a>
+        <p>{t.footer}</p>
+        <a href={githubUrl} target="_blank" rel="noreferrer">{t.source} ↗</a>
       </footer>
     </main>
   );
