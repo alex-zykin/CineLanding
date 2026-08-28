@@ -29,6 +29,7 @@ type ScrollSequenceProps = {
   beats: readonly SequenceBeat[];
   scrollLabel: string;
   frameLabel: string;
+  sequenceLabel: string;
 };
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
@@ -43,7 +44,7 @@ function frameUrl(manifest: FrameManifest, frame: number) {
   return `/sequence/${name}`;
 }
 
-export default function ScrollSequence({ id, ariaLabel, beats, scrollLabel, frameLabel }: ScrollSequenceProps) {
+export default function ScrollSequence({ id, ariaLabel, beats, scrollLabel, frameLabel, sequenceLabel }: ScrollSequenceProps) {
   const rootRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [activeBeat, setActiveBeat] = useState(0);
@@ -263,7 +264,7 @@ export default function ScrollSequence({ id, ariaLabel, beats, scrollLabel, fram
         </div>
 
         <div className="scroll-story-meta" aria-hidden="true">
-          <span>ORBIT / 01</span>
+          <span>{sequenceLabel}</span>
           <span>{frameLabel}</span>
         </div>
 

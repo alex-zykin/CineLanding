@@ -1,6 +1,6 @@
 ---
 name: cinelanding
-description: Plan and build cinematic scroll-driven landing pages with the CineLanding CLI. Use when redesigning an existing public website or creating a landing page from a brief and supplied assets, including scene planning, mock checks, approved KIE Seedance generation, media processing, and implementation in a target frontend repository.
+description: Plan and build cinematic scroll-driven landing pages with the CineLanding CLI. Use when redesigning an existing public website or creating a landing page from a brief and supplied assets, including scene planning, mock checks, approved KIE Seedance generation, frontend implementation, an optional technical 152-FZ readiness review, and an optional Prodamus payment scaffold.
 ---
 
 # CineLanding
@@ -26,6 +26,8 @@ Ask for or infer the mode from the requested outcome before running `new`:
 
 Choose motion separately with `--motion-style journey` or `--motion-style reveal`. Read [references/workflow.md](references/workflow.md) for the complete command sequence and [references/project-format.md](references/project-format.md) before editing `cinelanding.json`.
 
+When the requested result should be prepared for commercial launch in Russia, use `--business-ready` or select the two modules independently with `--privacy-readiness` and `--payment-gateway prodamus`. Read [references/business-ready.md](references/business-ready.md) before promising, implementing, or reporting either module.
+
 ## Read the relevant boundaries
 
 - Before any KIE operation, read [references/kie.md](references/kie.md).
@@ -44,6 +46,7 @@ Choose motion separately with `--motion-style journey` or `--motion-style reveal
 8. A KIE submission costs money. Show the scene, model, duration, resolution, and call count. Obtain authorization for that submission before passing `--confirm-spend`.
 9. Never retry `submission_unknown` automatically. Check the KIE account first because the provider may have accepted and charged for the task.
 10. Download successful KIE results promptly. Inspect the video and extracted frames for flicker, warped text, layout drift, geometry changes, and poor seams.
-11. When a target frontend is in scope, implement and test the real page. Report the project path, target repository, task IDs, outputs, checks, and any visual decisions that still need review.
+11. If business modules are enabled, complete their generated materials under `business/`. A source review is not a live privacy check, and a payment scaffold is not ready to accept money until its signed webhook and a control payment are verified. Show the exact control-payment amount and obtain explicit authorization before spending or refunding real money.
+12. When a target frontend is in scope, implement and test the real page. Report the project path, target repository, task IDs, outputs, checks, and any visual decisions that still need review.
 
 Never print or save `KIE_API_KEY`, place it in `cinelanding.json`, add it to a prompt, or commit it. Do not add a hosted CineLanding dashboard unless the user asks for that separate product. Ordinary landing-page implementation belongs in the chosen target repository.

@@ -22,8 +22,8 @@ const mono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://cinelanding.ru'),
-  title: 'ORBIT — Independent cinema | A CineLanding showcase',
-  description: 'Step inside ORBIT, a fictional independent cinema reimagined with CineLanding.',
+  title: 'CineLanding — Turn an old website into a cinematic landing page',
+  description: 'Turn an existing website into a cinematic landing page with optional technical privacy and Prodamus launch modules.',
   alternates: {
     canonical: '/',
   },
@@ -34,8 +34,8 @@ export const metadata: Metadata = {
     type: 'website',
     url: '/',
     siteName: 'CineLanding',
-    title: 'ORBIT — Independent cinema | A CineLanding showcase',
-    description: 'Step inside ORBIT, a fictional independent cinema reimagined with CineLanding.',
+    title: 'CineLanding — Turn an old website into a cinematic landing page',
+    description: 'Turn an existing website into a cinematic landing page with optional technical privacy and Prodamus launch modules.',
     images: [
       {
         url: '/og.png',
@@ -47,8 +47,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ORBIT — Independent cinema | A CineLanding showcase',
-    description: 'Step inside ORBIT, a fictional independent cinema reimagined with CineLanding.',
+    title: 'CineLanding — Turn an old website into a cinematic landing page',
+    description: 'Turn an existing website into a cinematic landing page with optional technical privacy and Prodamus launch modules.',
     images: ['/og.png'],
   },
 };

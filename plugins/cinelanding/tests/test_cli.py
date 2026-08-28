@@ -85,6 +85,49 @@ class CliSubmissionTests(unittest.TestCase):
             self.assertEqual(project["locales"], ["en-US", "ru-RU"])
             self.assertEqual(project["motion_style"], "reveal")
 
+    def test_new_business_ready_enables_privacy_and_prodamus_modules(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            destination = Path(temporary) / "demo"
+            exit_code, output = run_cli(
+                "new",
+                str(destination),
+                "--name",
+                "Demo",
+                "--mode",
+                "from-scratch",
+                "--business-ready",
+            )
+
+            self.assertEqual(exit_code, 0)
+            self.assertEqual(
+                output["project"]["project"]["business"],
+                {
+                    "privacy_readiness": True,
+                    "payment_gateway": "prodamus",
+                },
+            )
+            privacy_report = destination / "business" / "privacy-readiness.md"
+            payment_checklist = destination / "business" / "prodamus-launch.md"
+            self.assertTrue(privacy_report.is_file())
+            self.assertTrue(payment_checklist.is_file())
+            self.assertIn("not a legal opinion", privacy_report.read_text(encoding="utf-8"))
+            self.assertIn("verified webhook", payment_checklist.read_text(encoding="utf-8"))
+
+    def test_new_without_business_modules_does_not_create_business_directory(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            destination = Path(temporary) / "demo"
+            exit_code, _ = run_cli(
+                "new",
+                str(destination),
+                "--name",
+                "Demo",
+                "--mode",
+                "from-scratch",
+            )
+
+            self.assertEqual(exit_code, 0)
+            self.assertFalse((destination / "business").exists())
+
     def test_new_requires_mode(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             with self.assertRaises(SystemExit) as raised:

@@ -26,6 +26,8 @@ Use `from-scratch` for a brief and supplied material. It does not accept `--url`
 CLI new cinelanding-work/orbit --name "Orbit" --mode from-scratch --motion-style reveal --audience "Creative teams"
 ```
 
+Add `--business-ready` when the delivered project should also include a technical personal-data readiness review and a Prodamus one-time-payment launch checklist. Use `--privacy-readiness` or `--payment-gateway prodamus` when only one module is wanted. Read [business-ready.md](business-ready.md) before implementing or describing either module.
+
 The default motion style is `journey`; `reveal` is the other option. Motion style controls transition planning and does not change how the source material is collected.
 
 A new project contains only `en-US` unless locales are passed explicitly:
@@ -104,6 +106,8 @@ Media generation is only part of a finished landing page. Read [frontend-integra
 
 The target frontend owns routing, layout, accessibility, asset delivery, animation code, and deployment. This workflow does not create a CineLanding control panel.
 
+If a business module is enabled, implement it in the owning target layers after the page structure is stable. Complete `business/privacy-readiness.md` from code and live evidence. Implement the Prodamus adapter in the target backend, not in browser-only code, and complete `business/prodamus-launch.md` through a verified webhook and control payment before calling it ready.
+
 ## 9. Report the result
 
 Include:
@@ -113,6 +117,7 @@ Include:
 - scene IDs, task IDs, provider states, and returned credit usage;
 - downloaded videos and frame directories;
 - target routes and files changed, when frontend work was requested;
+- selected business modules, their current states, evidence, and remaining live or specialist checks;
 - build, runtime, responsive, and reduced-motion checks;
 - anything that still needs visual or factual review.
 

@@ -1,6 +1,6 @@
 {
   "name": "cinelanding",
-  "description": "CLI and agent workflow for landing pages with cinematic scroll-linked transitions.",
+  "description": "CLI and agent workflow for cinematic landing pages with optional privacy-readiness and payment modules.",
   "version": "0.2.0",
   "author": {
     "name": "Alex Zykin"
@@ -13,6 +13,8 @@
     "scrollytelling",
     "scroll-video",
     "kie-ai",
+    "privacy-readiness",
+    "prodamus",
     "agent"
   ]
 }

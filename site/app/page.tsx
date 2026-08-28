@@ -1,204 +1,291 @@
 'use client';
 
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState, type FormEvent } from 'react';
 import ScrollSequence from './scroll-sequence';
+import { normalizeSourceUrl, SourceUrlError } from './source-url.mjs';
 
 type Locale = 'en' | 'ru';
 
 const content = {
   en: {
-    pageTitle: 'ORBIT — Independent cinema | A CineLanding showcase',
-    pageDescription: 'Step inside ORBIT, a fictional independent cinema reimagined with CineLanding.',
-    brand: 'ORBIT',
-    brandNote: 'Picture house',
-    homeLabel: 'ORBIT home',
+    pageTitle: 'CineLanding — Turn an old website into a cinematic landing page',
+    pageDescription: 'Turn an existing website into a cinematic landing page with optional technical privacy and Prodamus launch modules.',
+    brand: 'CINELANDING',
+    brandNote: 'Managed web studio',
+    homeLabel: 'CineLanding home',
     navLabel: 'Primary navigation',
     nav: [
-      ['Programme', '#programme'],
-      ['The house', '#house'],
-      ['Visit', '#visit'],
+      ['How it works', '#workflow'],
+      ['Launch-ready', '#business-ready'],
+      ['Example', '#example'],
+      ['Pricing', '#pricing'],
     ],
     switchLabel: 'Переключить на русский',
-    showcaseLabel: 'A cinematic walk through ORBIT cinema',
-    showcaseScroll: 'Scroll to enter',
+    sequenceLabel: 'CineLanding / Project 01',
+    showcaseLabel: 'How CineLanding turns an old website into a cinematic landing page',
+    showcaseScroll: 'Scroll through the build',
     showcaseFrame: 'Scroll-directed sequence',
     showcaseBeats: [
       {
-        kicker: 'Independent cinema · open nightly',
-        title: <>Disappear<br />for a while.</>,
-        body: 'Independent films, restored classics, and stories that stay with you—shown the way they were meant to be seen.',
+        kicker: 'Start with the site you already have',
+        title: <>The story is there.<br />Bring it forward.</>,
+        body: 'Paste your current website. We keep the useful parts, find the missing story, and turn the first visit into an experience.',
         align: 'left',
-        action: { label: 'See what’s on', href: '#programme' },
+        action: { label: 'Start with your URL', href: '#start' },
       },
       {
-        kicker: 'The house',
-        title: <>Built for the<br />big screen.</>,
-        body: 'One auditorium. No bad rows. A room designed to let the street outside disappear.',
+        kicker: '01 / Keep what matters',
+        title: <>We read before<br />we redesign.</>,
+        body: 'Your offer, proof, voice, and working content become the brief. The old layout does not.',
         align: 'right',
       },
       {
-        kicker: 'The programme',
-        title: <>Chosen,<br />not filled.</>,
-        body: 'New voices, late-night cult films, director conversations, and classics returned to the screen.',
+        kicker: '02 / See the direction',
+        title: <>Approve the idea<br />before the build.</>,
+        body: 'A free concept shows the structure, visual tone, and motion plan clearly enough to make a decision.',
         align: 'left',
       },
       {
-        kicker: 'The evening',
-        title: <>Stay after<br />the credits.</>,
-        body: 'Doors open early. The bar stays warm. Here, the film is only the beginning of the night.',
+        kicker: '03 / Build the real thing',
+        title: <>One scroll.<br />A new first impression.</>,
+        body: 'After payment, CineLanding prepares the cinematic sequence, responsive page, source code, and the selected launch modules.',
         align: 'right',
       },
     ],
-    programme: {
-      kicker: 'Now showing · Friday 27',
-      title: <>Chosen for the room,<br /><em>not the algorithm.</em></>,
-      body: 'Three films. One screen. Each programme is assembled by people who still believe a cinema can have a point of view.',
-      booking: 'Choose seats',
-      films: [
-        ['18:30', 'After the Rain', 'Aya Mori · 2026 · 104 min', 'A quiet premiere'],
-        ['21:10', 'A Map of Silence', 'Tomás Vale · 2025 · 118 min', 'Director conversation'],
-        ['23:45', 'Night Shift', 'Lina Bell · 1997 · 96 min', 'Restored 4K'],
+    workflow: {
+      kicker: 'A clear route from old to new',
+      title: <>No mystery.<br /><em>Just three decisions.</em></>,
+      body: 'You see what happens at every stage, what is free, and what the 5,000 ₽ build includes before you spend anything.',
+      action: 'See the scope',
+      stepLabel: 'Step',
+      steps: [
+        ['01', 'Site review', 'We map the offer, content, audience, and what is worth keeping.', 'Included'],
+        ['02', 'Free direction', 'Page structure, visual tone, and a scene plan you can judge.', 'Before payment'],
+        ['03', 'Managed build', 'A responsive landing, one scroll scene, source code, and selected launch modules.', '5,000 ₽'],
       ],
     },
-    house: {
-      kicker: 'The house · since 1978',
-      title: <>Everything between<br />you and the screen<br /><em>has been removed.</em></>,
-      body: 'No ads after the lights go down. No glowing menu boards. Just a carefully tuned room, a generous screen, and the few seconds of silence before a film begins.',
-      imageAlt: 'The luminous entrance of the fictional ORBIT cinema',
-      caption: 'Auditorium 01 / doors open 30 minutes before the film',
+    concept: {
+      kicker: 'The free direction',
+      title: <>Enough to decide.<br /><em>Not dressed up as finished work.</em></>,
+      body: 'The concept is deliberately useful and honest: it shows the new hierarchy, opening composition, palette, and sequence logic. Production media and the finished frontend start only after approval and payment.',
+      imageAlt: 'A cinematic frame used to illustrate a CineLanding visual direction',
+      caption: 'Example direction / reviewed before production',
       facts: [
-        ['4K', 'laser projection'],
-        ['ATMOS', 'spatial sound'],
-        ['196', 'deep-red seats'],
-        ['7', 'nights a week'],
+        ['01', 'content map'],
+        ['02', 'page structure'],
+        ['03', 'visual direction'],
+        ['04', 'motion plan'],
       ],
     },
-    visit: {
-      kicker: 'Before and after the film',
-      title: <>Come for the film.<br /><em>Stay for the night.</em></>,
-      body: 'The bar opens at six with small plates, natural wine, and enough time to argue about the ending. Tickets can be held at the door until fifteen minutes before the screening.',
-      note: 'A fictional address for this showcase',
-      address: <>18 Mercury Lane<br />East Quarter</>,
-      hours: ['Bar from 18:00', 'First film 18:30', 'Last orders 01:00'],
-      action: 'Plan your evening',
+    businessReady: {
+      kicker: 'More than design',
+      title: <>A practical foundation<br /><em>for launching in Russia.</em></>,
+      body: 'Add a technical readiness review for Russia’s Federal Law No. 152-FZ and a Prodamus payment module. CineLanding prepares the working files, implementation contract, and launch checklist. You connect your merchant credentials and complete the final checks.',
+      action: 'Create a project with both modules',
+      modules: [
+        {
+          index: '01',
+          status: 'Technical review',
+          title: 'Technical 152-FZ readiness review',
+          body: 'We map where personal data is collected and stored, which services receive it, and how access, logs, retention, and deletion work.',
+          points: ['Data-flow map', 'Evidence and risks', 'Concrete fixes', 'Live-check list'],
+          note: 'This is a technical review, not legal advice or a compliance certificate.',
+        },
+        {
+          index: '02',
+          status: 'Ready to connect',
+          title: 'Prodamus payment module',
+          body: 'We prepare a server-side payment contract with order references, signed webhook verification, duplicate protection, and a payment log.',
+          points: ['Server-owned amount', 'Verified webhook', 'Idempotent fulfilment', 'Control-payment checklist'],
+          note: 'Going live requires an active Prodamus account, merchant credentials, a backend, and a successful test payment.',
+        },
+      ],
     },
-    before: {
-      kicker: 'A quiet transformation',
-      title: <>The story was always good.<br /><em>The old website just buried it.</em></>,
+    pricing: {
+      kicker: 'One project, one clear price',
+      title: <>Start free.<br /><em>Build it for 5,000 ₽.</em></>,
+      body: 'The first paid offer is intentionally simple: one old website becomes one polished landing page. No subscription and no surprise usage bill.',
+      action: 'Open the form',
+      cardLabel: 'Managed draft',
+      price: '5,000 ₽',
+      priceNote: 'per project',
+      urlLabel: 'Your current website',
+      urlPlaceholder: 'example.com',
+      submit: 'Check this address',
+      formNote: 'This preview checks the address in your browser only. It does not inspect, send, or save the website yet.',
+      readyTitle: 'The address looks ready',
+      readyBody: 'The next MVP step for {host} is sign-in, a short brief, and a saved concept request.',
+      scope: ['One landing page', 'One language', 'One scroll sequence', 'One small revision', 'Technical privacy report', 'Prodamus-ready scaffold'],
+      errors: {
+        empty: 'Enter the address of the website you want to redesign.',
+        invalid: 'That does not look like a complete website address.',
+        unsupported_protocol: 'Use a public HTTP or HTTPS website.',
+        credentials_not_allowed: 'Remove the username and password from the address.',
+        private_host: 'Use a public website. Local and private network addresses are not accepted.',
+      },
+    },
+    example: {
+      kicker: 'A finished example',
+      title: <>Same business.<br /><em>A completely different entrance.</em></>,
       oldLabel: 'Before',
-      oldTitle: 'WELCOME TO ORBIT CINEMA!!!',
-      oldCopy: 'Your local movie theatre on the World Wide Web. Click here for listings, prices and directions.',
+      oldTitle: 'WELCOME TO OUR WEBSITE!!!',
+      oldCopy: 'Company information, prices and contacts. Click the links below to continue.',
       oldAside: 'Best viewed at 800 × 600',
-      newLabel: 'Now',
-      newCopy: 'Same cinema. Same point of view. A website that finally feels like walking through its doors.',
+      oldButton: 'ENTER SITE',
+      newLabel: 'CineLanding result',
+      newCopy: 'ORBIT is our fictional cinema demo: a complete responsive page with a 120-frame sequence tied to the scroll.',
     },
-    reveal: {
-      kicker: 'Now for the reveal',
-      title: <>ORBIT is not<br />a real cinema.</>,
-      body: 'It is a fictional client site created with CineLanding to show the finished result: a scroll-directed sequence generated through KIE, semantic page content, and a design that can grow from an outdated website or a blank page.',
-      primary: 'Explore the open source',
-      secondary: 'How it works',
-      demo: 'Fictional showcase · no tickets are sold here',
+    openSource: {
+      kicker: 'Open source, on purpose',
+      title: <>Use the service.<br />Or run it yourself.</>,
+      body: 'The hosted service sells convenience: project setup, managed generation, review, launch modules, and delivery. The engine stays public under AGPL-3.0 for developers who prefer to install it themselves.',
+      primary: 'Start with your URL',
+      secondary: 'View on GitHub',
+      note: 'No feature penalty for self-hosting · managed service is optional',
     },
-    footer: 'ORBIT was made with CineLanding.',
+    ribbon: ['READ THE OLD SITE', 'FRAME THE NEW STORY', 'CHECK THE LAUNCH PATH', 'SHIP THE REAL PAGE'],
+    footer: 'CineLanding turns useful old websites into memorable new ones.',
     source: 'GitHub',
   },
   ru: {
-    pageTitle: 'ORBIT — независимый кинотеатр | Демо CineLanding',
-    pageDescription: 'Зайдите в ORBIT — вымышленный независимый кинотеатр, переосмысленный с помощью CineLanding.',
-    brand: 'ORBIT',
-    brandNote: 'Кинозал',
-    homeLabel: 'Главная ORBIT',
+    pageTitle: 'CineLanding — превращаем старые сайты в кинематографичные лендинги',
+    pageDescription: 'Превратите действующий сайт в кинематографичный лендинг с технической проверкой данных и модулем подключения Prodamus.',
+    brand: 'CINELANDING',
+    brandNote: 'Сервис лендингов',
+    homeLabel: 'Главная CineLanding',
     navLabel: 'Основная навигация',
     nav: [
-      ['Программа', '#programme'],
-      ['Пространство', '#house'],
-      ['Визит', '#visit'],
+      ['Как это работает', '#workflow'],
+      ['Для запуска', '#business-ready'],
+      ['Пример', '#example'],
+      ['Цена', '#pricing'],
     ],
     switchLabel: 'Switch to English',
-    showcaseLabel: 'Кинематографичный проход по кинотеатру ORBIT',
-    showcaseScroll: 'Листайте, чтобы войти',
+    sequenceLabel: 'CineLanding / Проект 01',
+    showcaseLabel: 'Как CineLanding превращает старый сайт в кинематографичный лендинг',
+    showcaseScroll: 'Листайте по этапам',
     showcaseFrame: 'Покадровая сцена под скроллом',
     showcaseBeats: [
       {
-        kicker: 'Независимый кинотеатр · каждый вечер',
-        title: <>Исчезните<br />на пару часов.</>,
-        body: 'Независимое кино, восстановленная классика и истории, которые не отпускают — на большом экране, как и должно быть.',
+        kicker: 'Начните с сайта, который уже есть',
+        title: <>История уже там.<br />Дайте ей место.</>,
+        body: 'Вставьте адрес действующего сайта. Мы сохраним полезное, найдём недостающую историю и превратим первое посещение во впечатление.',
         align: 'left',
-        action: { label: 'Что сегодня', href: '#programme' },
+        action: { label: 'Начать со своего URL', href: '#start' },
       },
       {
-        kicker: 'Пространство',
-        title: <>Создан для<br />большого экрана.</>,
-        body: 'Один зал. Плохих рядов нет. Здесь достаточно темноты, чтобы забыть об улице снаружи.',
+        kicker: '01 / Сохраняем главное',
+        title: <>Сначала читаем.<br />Потом меняем.</>,
+        body: 'Предложение, факты, голос и рабочий контент становятся основой. Старый макет — нет.',
         align: 'right',
       },
       {
-        kicker: 'Программа',
-        title: <>Выбираем,<br />а не заполняем.</>,
-        body: 'Новые имена, ночные культовые показы, разговоры с режиссёрами и классика, которая возвращается на экран.',
+        kicker: '02 / Показываем направление',
+        title: <>Сначала идея.<br />Потом сборка.</>,
+        body: 'Бесплатный концепт показывает структуру, визуальный характер и логику движения — этого достаточно, чтобы принять решение.',
         align: 'left',
       },
       {
-        kicker: 'Вечер',
-        title: <>Останьтесь<br />после титров.</>,
-        body: 'Мы открываемся заранее. В баре тепло. Здесь фильм — только начало вечера.',
+        kicker: '03 / Собираем настоящий сайт',
+        title: <>Один скролл.<br />Другое первое впечатление.</>,
+        body: 'После оплаты CineLanding готовит покадровую сцену, адаптивную страницу, исходный код и выбранные модули запуска.',
         align: 'right',
       },
     ],
-    programme: {
-      kicker: 'Сегодня · пятница, 27-е',
-      title: <>Для этого зала,<br /><em>а не для алгоритма.</em></>,
-      body: 'Три фильма. Один экран. Программу собирают люди, которые всё ещё верят: у кинотеатра может быть собственный взгляд.',
-      booking: 'Выбрать места',
-      films: [
-        ['18:30', 'После дождя', 'Ая Мори · 2026 · 104 мин', 'Тихая премьера'],
-        ['21:10', 'Карта тишины', 'Томас Вале · 2025 · 118 мин', 'Разговор с режиссёром'],
-        ['23:45', 'Ночная смена', 'Лина Белл · 1997 · 96 мин', 'Реставрация 4K'],
+    workflow: {
+      kicker: 'Понятный путь от старого к новому',
+      title: <>Никакой магии.<br /><em>Три понятных решения.</em></>,
+      body: 'Вы заранее видите каждый этап, бесплатную часть и состав сборки за 5 000 ₽ — до любых расходов.',
+      action: 'Посмотреть состав',
+      stepLabel: 'Этап',
+      steps: [
+        ['01', 'Разбор сайта', 'Собираем предложение, контент, аудиторию и то, что стоит сохранить.', 'Включено'],
+        ['02', 'Бесплатное направление', 'Структура страницы, визуальный характер и план сцен.', 'До оплаты'],
+        ['03', 'Готовая сборка', 'Адаптивный лендинг, одна scroll-сцена, исходный код и выбранные модули запуска.', '5 000 ₽'],
       ],
     },
-    house: {
-      kicker: 'Пространство · с 1978 года',
-      title: <>Между вами<br />и экраном<br /><em>ничего лишнего.</em></>,
-      body: 'После начала — никакой рекламы. Никаких светящихся меню. Только настроенный зал, большой экран и несколько секунд тишины перед первым кадром.',
-      imageAlt: 'Светящийся вход в вымышленный кинотеатр ORBIT',
-      caption: 'Зал 01 / двери открываются за 30 минут до фильма',
+    concept: {
+      kicker: 'Бесплатное направление',
+      title: <>Достаточно для решения.<br /><em>Но это ещё не готовый сайт.</em></>,
+      body: 'Концепт честно показывает новую иерархию, первый экран, палитру и логику сцены. Рабочий frontend и платная генерация начинаются только после вашего одобрения и оплаты.',
+      imageAlt: 'Кинематографичный кадр для примера визуального направления CineLanding',
+      caption: 'Пример направления / согласуется до сборки',
       facts: [
-        ['4K', 'лазерная проекция'],
-        ['ATMOS', 'объёмный звук'],
-        ['196', 'кресел'],
-        ['7', 'вечеров в неделю'],
+        ['01', 'карта контента'],
+        ['02', 'структура страницы'],
+        ['03', 'визуальный характер'],
+        ['04', 'план движения'],
       ],
     },
-    visit: {
-      kicker: 'До и после фильма',
-      title: <>Приходите на фильм.<br /><em>Оставайтесь ради вечера.</em></>,
-      body: 'Бар открывается в шесть: небольшое меню, натуральное вино и время поспорить о финале. Билет можно забрать у входа не позднее чем за пятнадцать минут до сеанса.',
-      note: 'Вымышленный адрес для этой демонстрации',
-      address: <>Меркурий-лейн, 18<br />Восточный квартал</>,
-      hours: ['Бар с 18:00', 'Первый сеанс 18:30', 'Последний заказ 01:00'],
-      action: 'Спланировать вечер',
+    businessReady: {
+      kicker: 'Не только дизайн',
+      title: <>Техническая основа<br /><em>для запуска в России.</em></>,
+      body: 'Добавьте к проекту проверку готовности к требованиям 152-ФЗ и модуль оплаты Prodamus. CineLanding подготовит рабочие файлы, контракт реализации и чек-лист запуска. Вам останется подключить свои реквизиты и пройти финальные проверки.',
+      action: 'Создать проект с двумя модулями',
+      modules: [
+        {
+          index: '01',
+          status: 'Технический аудит',
+          title: 'Проверка готовности к 152-ФЗ',
+          body: 'Проверяем, где собираются и хранятся персональные данные, какие сервисы их получают, как устроены доступ, логи, сроки хранения и удаление.',
+          points: ['Карта потоков данных', 'Подтверждения и риски', 'Задачи на исправление', 'Проверки окружения'],
+          note: 'Это техническая проверка, а не юридическое заключение или сертификат соответствия.',
+        },
+        {
+          index: '02',
+          status: 'Готово к подключению',
+          title: 'Модуль оплаты Prodamus',
+          body: 'Готовим серверный контракт оплаты: идентификатор заказа, проверку подписи webhook, защиту от повторной обработки и журнал платежей.',
+          points: ['Сумма с сервера', 'Проверенный webhook', 'Защита от дублей', 'Контрольный платёж'],
+          note: 'Для запуска нужны кабинет Prodamus, серверные реквизиты, backend и успешный тестовый платёж.',
+        },
+      ],
     },
-    before: {
-      kicker: 'Тихое преображение',
-      title: <>История всегда была хорошей.<br /><em>Старый сайт просто мешал её увидеть.</em></>,
+    pricing: {
+      kicker: 'Один проект — одна понятная цена',
+      title: <>Начните бесплатно.<br /><em>Сборка — 5 000 ₽.</em></>,
+      body: 'Первое предложение намеренно простое: один старый сайт превращается в один аккуратный лендинг. Без подписки и неожиданного счёта за генерации.',
+      action: 'Открыть форму',
+      cardLabel: 'Готовая сборка',
+      price: '5 000 ₽',
+      priceNote: 'за проект',
+      urlLabel: 'Адрес действующего сайта',
+      urlPlaceholder: 'example.ru',
+      submit: 'Проверить адрес',
+      formNote: 'Сейчас форма проверяет адрес только в вашем браузере. Она ещё не анализирует, не отправляет и не сохраняет сайт.',
+      readyTitle: 'Адрес подходит для проекта',
+      readyBody: 'Следующий шаг MVP для {host} — вход, короткий бриф и сохранённая заявка на концепт.',
+      scope: ['Один лендинг', 'Один язык', 'Одна scroll-сцена', 'Одна небольшая правка', 'Технический отчёт по данным', 'Заготовка Prodamus'],
+      errors: {
+        empty: 'Укажите адрес сайта, который хотите переделать.',
+        invalid: 'Похоже, это не полный адрес сайта.',
+        unsupported_protocol: 'Нужен публичный сайт по HTTP или HTTPS.',
+        credentials_not_allowed: 'Уберите логин и пароль из адреса.',
+        private_host: 'Нужен публичный сайт. Локальные и внутренние адреса не принимаются.',
+      },
+    },
+    example: {
+      kicker: 'Готовый пример',
+      title: <>Тот же бизнес.<br /><em>Совсем другой вход.</em></>,
       oldLabel: 'Раньше',
-      oldTitle: 'ДОБРО ПОЖАЛОВАТЬ В КИНОТЕАТР ORBIT!!!',
-      oldCopy: 'Ваш кинотеатр во Всемирной паутине. Нажмите сюда: расписание, цены и схема проезда.',
+      oldTitle: 'ДОБРО ПОЖАЛОВАТЬ НА НАШ САЙТ!!!',
+      oldCopy: 'Информация о компании, цены и контакты. Для продолжения нажмите на ссылки ниже.',
       oldAside: 'Лучше смотреть в разрешении 800 × 600',
-      newLabel: 'Теперь',
-      newCopy: 'Тот же кинотеатр. Тот же характер. Сайт, который наконец похож на шаг через его двери.',
+      oldButton: 'ВОЙТИ НА САЙТ',
+      newLabel: 'Результат CineLanding',
+      newCopy: 'ORBIT — наш вымышленный кинотеатр: готовая адаптивная страница и 120 кадров, которыми управляет скролл.',
     },
-    reveal: {
-      kicker: 'А теперь — развязка',
-      title: <>ORBIT — не<br />настоящий кинотеатр.</>,
-      body: 'Это вымышленный клиентский сайт, собранный с помощью CineLanding. Так выглядит конечный результат: покадровая сцена от KIE под управлением скролла, живой текст в HTML и дизайн, который можно вырастить из устаревшего сайта или с чистого листа.',
-      primary: 'Открыть исходный код',
-      secondary: 'Как это работает',
-      demo: 'Вымышленная демонстрация · билеты здесь не продаются',
+    openSource: {
+      kicker: 'Открытый код — это принцип',
+      title: <>Используйте сервис.<br />Или запустите сами.</>,
+      body: 'В сервисе вы платите за удобство: настройку проекта, управляемую генерацию, проверку, модули запуска и готовую сборку. Сам движок остаётся открытым под AGPL-3.0 для тех, кто хочет установить его самостоятельно.',
+      primary: 'Начать со своего URL',
+      secondary: 'Открыть GitHub',
+      note: 'Самостоятельная установка без ограничений · сервис остаётся выбором',
     },
-    footer: 'ORBIT сделан с помощью CineLanding.',
+    ribbon: ['ЧИТАЕМ СТАРЫЙ САЙТ', 'СОБИРАЕМ НОВУЮ ИСТОРИЮ', 'ПРОВЕРЯЕМ ПУТЬ К ЗАПУСКУ', 'ПУБЛИКУЕМ РАБОЧУЮ СТРАНИЦУ'],
+    footer: 'CineLanding превращает полезные старые сайты в запоминающиеся новые.',
     source: 'GitHub',
   },
 } as const;
@@ -208,6 +295,10 @@ const githubUrl = 'https://github.com/alex-zykin/CineLanding';
 export default function Home() {
   const [locale, setLocale] = useState<Locale>('en');
   const [localeReady, setLocaleReady] = useState(false);
+  const [sourceUrl, setSourceUrl] = useState('');
+  const [sourceHost, setSourceHost] = useState('');
+  const [sourceError, setSourceError] = useState('');
+  const sourceInputId = useId();
   const t = content[locale];
 
   useEffect(() => {
@@ -258,11 +349,26 @@ export default function Home() {
     };
   }, []);
 
+  const handleSourceSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSourceError('');
+    setSourceHost('');
+
+    try {
+      const normalized = normalizeSourceUrl(sourceUrl);
+      setSourceUrl(normalized.url);
+      setSourceHost(normalized.hostname);
+    } catch (error) {
+      const code = error instanceof SourceUrlError ? error.code : 'invalid';
+      setSourceError(t.pricing.errors[code] ?? t.pricing.errors.invalid);
+    }
+  };
+
   return (
     <main className="site-shell">
       <header className="site-header">
         <a className="brand" href="#top" aria-label={t.homeLabel}>
-          <span className="brand-mark" aria-hidden="true">O</span>
+          <span className="brand-mark" aria-hidden="true">C</span>
           <span className="brand-copy"><strong>{t.brand}</strong><small>{t.brandNote}</small></span>
         </a>
 
@@ -288,52 +394,53 @@ export default function Home() {
         beats={t.showcaseBeats}
         scrollLabel={t.showcaseScroll}
         frameLabel={t.showcaseFrame}
+        sequenceLabel={t.sequenceLabel}
       />
 
-      <section className="programme-section" id="programme">
+      <section className="programme-section" id="workflow">
         <div className="section-intro reveal">
-          <p className="eyebrow">{t.programme.kicker}</p>
-          <h2>{t.programme.title}</h2>
-          <p className="lede">{t.programme.body}</p>
+          <p className="eyebrow">{t.workflow.kicker}</p>
+          <h2>{t.workflow.title}</h2>
+          <p className="lede">{t.workflow.body}</p>
         </div>
 
         <ol className="film-list">
-          {t.programme.films.map(([time, title, detail, note], index) => (
-            <li className="film-row reveal" key={`${time}-${title}`}>
-              <span className="film-index">0{index + 1}</span>
-              <time>{time}</time>
+          {t.workflow.steps.map(([index, title, detail, note]) => (
+            <li className="film-row reveal" key={index}>
+              <span className="film-index">{index}</span>
+              <time>{t.workflow.stepLabel}</time>
               <div><h3>{title}</h3><p>{detail}</p></div>
               <span className="film-note">{note}</span>
-              <a href="#visit" aria-label={`${t.programme.booking}: ${title}`}><span>{t.programme.booking}</span><b aria-hidden="true">↗</b></a>
+              <a href={index === '03' ? '#pricing' : '#concept'} aria-label={`${t.workflow.action}: ${title}`}><span>{t.workflow.action}</span><b aria-hidden="true">↓</b></a>
             </li>
           ))}
         </ol>
       </section>
 
       <div className="type-ribbon" aria-hidden="true">
-        <span>PICTURES NEED DARKNESS</span><i>●</i><span>STORIES NEED A ROOM</span><i>●</i><span>ORBIT / EAST QUARTER</span>
+        {t.ribbon.map((line) => <span key={line}>{line}</span>)}
       </div>
 
-      <section className="house-section" id="house">
+      <section className="house-section" id="concept">
         <div className="house-copy reveal">
-          <p className="eyebrow">{t.house.kicker}</p>
-          <h2>{t.house.title}</h2>
-          <p className="lede">{t.house.body}</p>
+          <p className="eyebrow">{t.concept.kicker}</p>
+          <h2>{t.concept.title}</h2>
+          <p className="lede">{t.concept.body}</p>
         </div>
 
         <figure className="house-visual reveal">
           <Image
             src="/sequence/frame_0086.jpg"
-            alt={t.house.imageAlt}
+            alt={t.concept.imageAlt}
             fill
             sizes="(max-width: 800px) 100vw, 58vw"
           />
           <span className="house-aperture" aria-hidden="true" />
-          <figcaption>{t.house.caption}</figcaption>
+          <figcaption>{t.concept.caption}</figcaption>
         </figure>
 
         <div className="house-facts">
-          {t.house.facts.map(([value, label]) => (
+          {t.concept.facts.map(([value, label]) => (
             <div className="house-fact reveal" key={value}>
               <strong>{value}</strong><span>{label}</span>
             </div>
@@ -341,48 +448,103 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="visit-section" id="visit">
+      <section className="business-section" id="business-ready">
+        <div className="business-heading reveal">
+          <p className="eyebrow">{t.businessReady.kicker}</p>
+          <h2>{t.businessReady.title}</h2>
+          <p>{t.businessReady.body}</p>
+        </div>
+
+        <div className="business-grid">
+          {t.businessReady.modules.map((module) => (
+            <article className="business-card reveal" key={module.index}>
+              <div className="business-card-topline">
+                <span>{module.index}</span>
+                <strong>{module.status}</strong>
+              </div>
+              <h3>{module.title}</h3>
+              <p>{module.body}</p>
+              <ul>{module.points.map((point) => <li key={point}>{point}</li>)}</ul>
+              <small>{module.note}</small>
+            </article>
+          ))}
+        </div>
+
+        <a className="business-action reveal" href="#start">
+          <span>{t.businessReady.action}</span><b aria-hidden="true">↓</b>
+        </a>
+      </section>
+
+      <section className="visit-section" id="pricing">
         <div className="visit-heading reveal">
-          <p className="eyebrow">{t.visit.kicker}</p>
-          <h2>{t.visit.title}</h2>
+          <p className="eyebrow">{t.pricing.kicker}</p>
+          <h2>{t.pricing.title}</h2>
         </div>
         <div className="visit-copy reveal">
-          <p>{t.visit.body}</p>
-          <a className="round-action" href="#visit-card" aria-label={t.visit.action}><span>{t.visit.action}</span><b aria-hidden="true">↓</b></a>
+          <p>{t.pricing.body}</p>
+          <a className="round-action" href="#start" aria-label={t.pricing.action}><span>{t.pricing.action}</span><b aria-hidden="true">↓</b></a>
         </div>
-        <article className="ticket-card reveal" id="visit-card">
-          <div className="ticket-topline"><span>ORBIT</span><span>ADMIT ONE</span></div>
-          <div className="ticket-address">{t.visit.address}</div>
-          <ul>{t.visit.hours.map((line) => <li key={line}>{line}</li>)}</ul>
-          <p>{t.visit.note}</p>
-          <div className="ticket-code" aria-hidden="true">010 110 111 100 011</div>
+
+        <article className="ticket-card project-card reveal" id="start">
+          <div className="ticket-topline"><span>CINELANDING</span><span>{t.pricing.cardLabel}</span></div>
+          <div className="project-price">{t.pricing.price}<small>{t.pricing.priceNote}</small></div>
+
+          <form className="project-form" onSubmit={handleSourceSubmit} noValidate>
+            <label htmlFor={sourceInputId}>{t.pricing.urlLabel}</label>
+            <div className="project-input-row">
+              <input
+                id={sourceInputId}
+                inputMode="url"
+                name="source-url"
+                onChange={(event) => setSourceUrl(event.target.value)}
+                placeholder={t.pricing.urlPlaceholder}
+                spellCheck={false}
+                type="url"
+                value={sourceUrl}
+                aria-describedby={`${sourceInputId}-note${sourceError ? ` ${sourceInputId}-error` : ''}`}
+                aria-invalid={Boolean(sourceError)}
+              />
+              <button type="submit">{t.pricing.submit}<span aria-hidden="true">→</span></button>
+            </div>
+            {sourceError ? <p className="project-message is-error" id={`${sourceInputId}-error`} role="alert">{sourceError}</p> : null}
+            {sourceHost ? (
+              <div className="project-message is-ready" role="status">
+                <strong>{t.pricing.readyTitle}</strong>
+                <span>{t.pricing.readyBody.replace('{host}', sourceHost)}</span>
+              </div>
+            ) : null}
+            <p className="project-form-note" id={`${sourceInputId}-note`}>{t.pricing.formNote}</p>
+          </form>
+
+          <ul className="project-scope">{t.pricing.scope.map((line) => <li key={line}>{line}</li>)}</ul>
+          <div className="ticket-code" aria-hidden="true">CINE / MVP / 001</div>
         </article>
       </section>
 
-      <section className="before-section">
+      <section className="before-section" id="example">
         <div className="before-heading reveal">
-          <p className="eyebrow">{t.before.kicker}</p>
-          <h2>{t.before.title}</h2>
+          <p className="eyebrow">{t.example.kicker}</p>
+          <h2>{t.example.title}</h2>
         </div>
         <div className="before-grid">
           <article className="old-browser reveal">
-            <div className="browser-bar"><i /><i /><i /><span>orbitcinema.net/index.html</span></div>
+            <div className="browser-bar"><i /><i /><i /><span>example-business.ru/index.html</span></div>
             <div className="old-site">
-              <span>{t.before.oldLabel}</span>
+              <span>{t.example.oldLabel}</span>
               <p className="old-stars" aria-hidden="true">✦ ✧ ✦ ✧ ✦</p>
-              <h3>{t.before.oldTitle}</h3>
-              <p>{t.before.oldCopy}</p>
-              <button type="button">ENTER SITE</button>
-              <small>{t.before.oldAside}</small>
+              <h3>{t.example.oldTitle}</h3>
+              <p>{t.example.oldCopy}</p>
+              <button type="button">{t.example.oldButton}</button>
+              <small>{t.example.oldAside}</small>
             </div>
           </article>
           <article className="now-card reveal">
-            <span>{t.before.newLabel}</span>
+            <span>{t.example.newLabel}</span>
             <div className="now-frame">
               <Image src="/sequence/frame_0119.jpg" alt="" fill sizes="(max-width: 800px) 100vw, 45vw" />
               <b>ORBIT</b>
             </div>
-            <p>{t.before.newCopy}</p>
+            <p>{t.example.newCopy}</p>
           </article>
         </div>
       </section>
@@ -390,20 +552,20 @@ export default function Home() {
       <section className="reveal-section" id="about">
         <div className="reveal-rings" aria-hidden="true"><i /><i /><i /></div>
         <div className="reveal-content reveal">
-          <p className="eyebrow">{t.reveal.kicker}</p>
-          <h2>{t.reveal.title}</h2>
-          <p>{t.reveal.body}</p>
+          <p className="eyebrow">{t.openSource.kicker}</p>
+          <h2>{t.openSource.title}</h2>
+          <p>{t.openSource.body}</p>
           <div className="reveal-actions">
-            <a className="button button-primary" href={githubUrl} target="_blank" rel="noreferrer">{t.reveal.primary}<span aria-hidden="true">↗</span></a>
-            <a className="button button-ghost" href={`${githubUrl}#readme`} target="_blank" rel="noreferrer">{t.reveal.secondary}<span aria-hidden="true">↗</span></a>
+            <a className="button button-primary" href="#start">{t.openSource.primary}<span aria-hidden="true">↓</span></a>
+            <a className="button button-ghost" href={githubUrl} target="_blank" rel="noreferrer">{t.openSource.secondary}<span aria-hidden="true">↗</span></a>
           </div>
-          <small>{t.reveal.demo}</small>
+          <small>{t.openSource.note}</small>
         </div>
       </section>
 
       <footer className="site-footer">
         <a className="brand footer-brand" href="#top" aria-label={t.homeLabel}>
-          <span className="brand-mark" aria-hidden="true">O</span>
+          <span className="brand-mark" aria-hidden="true">C</span>
           <span className="brand-copy"><strong>{t.brand}</strong><small>{t.brandNote}</small></span>
         </a>
         <p>{t.footer}</p>

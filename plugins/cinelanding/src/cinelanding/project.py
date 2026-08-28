@@ -5,6 +5,7 @@ import os
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
+from .business import write_business_materials
 from .errors import ProjectError
 from .models import GenerationJob, Project, Scene, is_http_url, slugify, utc_now
 
@@ -38,6 +39,8 @@ def create_project(
     mode: str,
     motion_style: str,
     audience: str,
+    privacy_readiness: bool = False,
+    payment_gateway: str = "none",
     force: bool = False,
 ) -> Tuple[Path, Project]:
     root = destination.expanduser().resolve()
@@ -64,6 +67,8 @@ def create_project(
         source_url=source_url,
         audience=audience,
         created_at=utc_now(),
+        privacy_readiness=privacy_readiness,
+        payment_gateway=payment_gateway,
         scenes=[
             Scene(
                 id="scene-01",
@@ -84,6 +89,7 @@ def create_project(
 
     for relative in ("inputs", "artifacts", "frames", STATE_DIR):
         (root / relative).mkdir(parents=True, exist_ok=True)
+    write_business_materials(root, project)
     atomic_write_json(manifest, project.to_dict())
     return root, project
 
@@ -153,6 +159,10 @@ def project_readiness(root: Path, project: Project) -> Dict[str, Any]:
         "locales": project.locales,
         "mode": project.mode,
         "motion_style": project.motion_style,
+        "business": {
+            "privacy_readiness": project.privacy_readiness,
+            "payment_gateway": project.payment_gateway,
+        },
         "ready": bool(scene_plans) and all(item["ready"] for item in scene_plans),
         "paid_calls": len(scene_plans),
         "scenes": scene_plans,

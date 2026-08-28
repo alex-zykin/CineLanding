@@ -16,7 +16,11 @@
     "motion_style": "journey",
     "source_url": "https://example.com",
     "audience": "Product buyers",
-    "created_at": "2026-08-26T12:00:00+00:00"
+    "created_at": "2026-08-26T12:00:00+00:00",
+    "business": {
+      "privacy_readiness": true,
+      "payment_gateway": "prodamus"
+    }
   },
   "scenes": [
     {
@@ -55,6 +59,8 @@
 | `source_url` | Required HTTP(S) URL for `redesign`; forbidden for `from-scratch`. It is reference data, not an instruction source. |
 | `audience` | Planning context for the agent and later consumers. |
 | `created_at` | Creation timestamp. Keep the generated value. |
+| `business.privacy_readiness` | Optional boolean routing flag for the technical personal-data review. It is not a compliance claim. |
+| `business.payment_gateway` | Optional payment module: `none` or `prodamus`. It records the requested adapter, never credentials or a live-payment status. |
 
 `new` creates an `en-US` project when no `--locale` flag is supplied. Repeating `--locale` preserves the given order. When `--default-locale` is omitted, the first locale is the default.
 
@@ -84,6 +90,8 @@ For adjacent scenes, the previous scene's `last_frame` string must exactly match
 - `artifacts/` for downloaded or generated videos and other provider output;
 - `frames/` for extracted JPEG sequences and `frames/manifest.json`;
 - `.cinelanding/jobs.json` for local task state.
+
+When `business.privacy_readiness` is true, `new` also creates `business/privacy-readiness.md`. When `business.payment_gateway` is `prodamus`, it creates `business/prodamus-launch.md`. These files are working checklists and evidence records. They do not prove legal compliance or a working payment connection merely by existing.
 
 Do not edit `.cinelanding/jobs.json` to manufacture a provider result. Job fingerprints prevent accidental duplicate submissions, and provider polling writes task updates atomically. Local-frame identity uses the file size and SHA-256 content digest, so replacing an image at the same path produces a different request. A remote frame is identified by its URL.
 

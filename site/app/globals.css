@@ -290,6 +290,7 @@ img { display: block; }
 
 .programme-section,
 .house-section,
+.business-section,
 .visit-section,
 .before-section {
   position: relative;
@@ -302,6 +303,7 @@ img { display: block; }
 
 .section-intro h2,
 .house-copy h2,
+.business-heading h2,
 .visit-heading h2,
 .before-heading h2,
 .reveal-content h2 {
@@ -409,6 +411,118 @@ h2 em { font-weight: 500; }
 .house-fact strong { font-family: var(--font-display), Georgia, serif; font-size: clamp(54px, 6vw, 94px); font-weight: 500; letter-spacing: -.04em; line-height: .8; }
 .house-fact span { color: rgba(238, 233, 223, .52); font-family: var(--font-mono), monospace; font-size: 8px; letter-spacing: .12em; text-transform: uppercase; }
 
+.business-section {
+  position: relative;
+  overflow: hidden;
+  background: var(--paper-deep);
+  color: var(--ink);
+}
+
+.business-section::before {
+  position: absolute;
+  top: -17vw;
+  right: -14vw;
+  width: 52vw;
+  aspect-ratio: 1;
+  border: 1px solid rgba(11, 10, 9, .12);
+  border-radius: 50%;
+  box-shadow: 0 0 0 9vw rgba(11, 10, 9, .025), 0 0 0 18vw rgba(11, 10, 9, .018);
+  content: '';
+  pointer-events: none;
+}
+
+.business-heading { position: relative; z-index: 1; max-width: 1280px; }
+.business-heading h2 { max-width: 1240px; font-size: clamp(64px, 8.2vw, 128px); }
+.business-heading > p:not(.eyebrow) {
+  width: min(590px, 100%);
+  margin: 50px 0 0 auto;
+  color: rgba(11, 10, 9, .66);
+  font-size: clamp(15px, 1.3vw, 19px);
+  line-height: 1.65;
+}
+
+.business-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  margin-top: clamp(72px, 9vw, 130px);
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--ink);
+  border-left: 1px solid var(--ink);
+}
+
+.business-card {
+  display: grid;
+  min-height: 610px;
+  align-content: start;
+  padding: clamp(30px, 4vw, 62px);
+  border-right: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+
+.business-card:nth-child(2) { background: var(--ink); color: var(--paper); }
+.business-card-topline { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.business-card-topline span {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(47px, 5vw, 78px);
+  letter-spacing: -.04em;
+  line-height: .75;
+}
+.business-card-topline strong {
+  padding: 6px 9px;
+  border: 1px solid currentColor;
+  font-family: var(--font-mono), monospace;
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.business-card h3 {
+  max-width: 660px;
+  margin: 68px 0 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(42px, 5vw, 76px);
+  font-weight: 500;
+  letter-spacing: -.04em;
+  line-height: .9;
+}
+.business-card > p { max-width: 570px; margin: 28px 0 0; color: rgba(11, 10, 9, .65); font-size: 15px; line-height: 1.65; }
+.business-card:nth-child(2) > p { color: rgba(238, 233, 223, .64); }
+.business-card ul {
+  display: grid;
+  margin: 46px 0 0;
+  padding: 0;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid currentColor;
+  list-style: none;
+}
+.business-card li { padding: 15px 10px 15px 0; border-bottom: 1px solid currentColor; font-family: var(--font-mono), monospace; font-size: 8px; letter-spacing: .1em; text-transform: uppercase; }
+.business-card li:nth-child(odd) { border-right: 1px solid currentColor; }
+.business-card li:nth-child(even) { padding-left: 16px; }
+.business-card small { display: block; margin-top: 28px; color: rgba(11, 10, 9, .52); font-size: 10px; line-height: 1.5; }
+.business-card:nth-child(2) small { color: rgba(238, 233, 223, .48); }
+
+.business-action {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: 78px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  margin-top: 28px;
+  padding: 0 28px;
+  border: 1px solid var(--ink);
+  background: var(--acid);
+  font-family: var(--font-mono), monospace;
+  font-size: 9px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+.business-action:hover { background: var(--signal); color: #fff; }
+.business-action b { font-size: 18px; font-weight: 400; }
+
 .visit-section {
   display: grid;
   min-height: 940px;
@@ -460,6 +574,123 @@ h2 em { font-weight: 500; }
 .ticket-card ul { display: grid; gap: 7px; margin: 48px 0 28px; padding: 0; list-style: none; font-family: var(--font-mono), monospace; font-size: 8px; letter-spacing: .1em; text-transform: uppercase; }
 .ticket-card p { margin: 0; padding-top: 18px; border-top: 1px dashed var(--ink); font-size: 10px; opacity: .58; }
 .ticket-code { position: absolute; right: 34px; bottom: 26px; font-family: var(--font-mono), monospace; font-size: 7px; letter-spacing: .25em; writing-mode: vertical-rl; }
+
+.project-card {
+  min-height: 610px;
+  transform: rotate(1.25deg);
+}
+
+.project-price {
+  display: flex;
+  align-items: baseline;
+  gap: 15px;
+  margin-top: 34px;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(64px, 6vw, 94px);
+  font-weight: 500;
+  letter-spacing: -.055em;
+  line-height: .85;
+}
+
+.project-price small {
+  font-family: var(--font-mono), monospace;
+  font-size: 8px;
+  font-weight: 400;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.project-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 34px;
+  padding: 25px 0 22px;
+  border-top: 1px dashed var(--ink);
+  border-bottom: 1px dashed var(--ink);
+}
+
+.project-form label {
+  font-family: var(--font-mono), monospace;
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.project-input-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  border: 1px solid var(--ink);
+}
+
+.project-input-row input {
+  min-width: 0;
+  padding: 15px 16px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font: 500 14px var(--font-sans), Arial, sans-serif;
+}
+
+.project-input-row input::placeholder { color: rgba(11, 10, 9, .42); }
+.project-input-row:focus-within { outline: 2px solid var(--signal); outline-offset: 3px; }
+.project-input-row input[aria-invalid='true'] { color: var(--wine); }
+
+.project-input-row button {
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 17px;
+  border: 0;
+  border-left: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  cursor: pointer;
+  font-family: var(--font-mono), monospace;
+  font-size: 8px;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+.project-input-row button:hover { background: var(--signal); color: #fff; }
+.project-input-row button span { color: var(--acid); font-size: 15px; }
+
+.ticket-card p.project-message,
+.ticket-card p.project-form-note {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.project-message {
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.project-message.is-error { color: var(--wine); }
+.project-message.is-ready {
+  display: grid;
+  gap: 4px;
+  padding: 12px 13px;
+  background: var(--acid);
+}
+.project-message.is-ready strong { font-size: 12px; }
+.project-message.is-ready span { font-size: 10px; line-height: 1.45; }
+.ticket-card p.project-form-note { color: rgba(11, 10, 9, .55); font-size: 9px; line-height: 1.45; }
+
+.ticket-card ul.project-scope {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 18px;
+  margin: 24px 0 0;
+}
+
+.project-scope li { position: relative; padding-left: 14px; }
+.project-scope li::before { position: absolute; left: 0; color: var(--signal); content: '●'; font-size: 6px; }
 
 .before-section { background: var(--paper-deep); }
 .before-heading h2 { max-width: 1340px; }
@@ -578,10 +809,12 @@ h2 em { font-weight: 500; }
   .scroll-story-counter { bottom: 18px; }
   .programme-section,
   .house-section,
+  .business-section,
   .visit-section,
   .before-section { padding-right: 20px; padding-left: 20px; }
   .section-intro h2,
   .house-copy h2,
+  .business-heading h2,
   .visit-heading h2,
   .before-heading h2 { font-size: clamp(57px, 17.2vw, 96px); }
   .section-intro .lede,
@@ -602,11 +835,21 @@ h2 em { font-weight: 500; }
   .house-fact { min-height: 150px; padding: 20px; border-bottom: 1px solid rgba(238, 233, 223, .22); }
   .house-fact:nth-child(odd) { border-left: 1px solid rgba(238, 233, 223, .22); }
   .house-fact strong { font-size: 55px; }
+  .business-heading > p:not(.eyebrow) { margin: 34px 0 0; }
+  .business-grid { grid-template-columns: 1fr; }
+  .business-card { min-height: 0; }
+  .business-card h3 { margin-top: 48px; }
+  .business-action { align-items: flex-start; padding-top: 22px; padding-bottom: 22px; line-height: 1.5; }
   .visit-section { min-height: 0; grid-template-columns: 1fr; grid-template-rows: auto; gap: 54px; }
   .visit-heading { grid-column: auto; }
   .visit-copy { display: grid; gap: 28px; align-self: auto; }
   .round-action { width: 112px; height: 112px; }
   .ticket-card { width: calc(100% - 10px); min-height: 440px; margin: 20px 0 0 0; padding: 28px; transform: rotate(1.5deg); }
+  .project-card { min-height: 0; }
+  .project-price { flex-direction: column; gap: 9px; }
+  .project-input-row { grid-template-columns: 1fr; }
+  .project-input-row button { border-top: 1px solid var(--ink); border-left: 0; }
+  .ticket-card ul.project-scope { grid-template-columns: 1fr; }
   .before-grid { grid-template-columns: 1fr; gap: 70px; }
   .old-site { min-height: 470px; }
   .now-card { padding-top: 0; }

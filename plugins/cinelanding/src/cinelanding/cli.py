@@ -72,6 +72,8 @@ def cmd_doctor(_: argparse.Namespace) -> int:
 def cmd_new(args: argparse.Namespace) -> int:
     locales = args.locale or ["en-US"]
     default_locale = args.default_locale or locales[0]
+    privacy_readiness = bool(args.business_ready or args.privacy_readiness)
+    payment_gateway = args.payment_gateway or ("prodamus" if args.business_ready else "none")
     root, project = create_project(
         destination=args.path,
         name=args.name,
@@ -81,6 +83,8 @@ def cmd_new(args: argparse.Namespace) -> int:
         mode=args.mode,
         motion_style=args.motion_style,
         audience=args.audience,
+        privacy_readiness=privacy_readiness,
+        payment_gateway=payment_gateway,
         force=args.force,
     )
     emit({"created": str(root), "manifest": str(root / "cinelanding.json"), "project": project.to_dict()})
@@ -249,6 +253,21 @@ def build_parser() -> argparse.ArgumentParser:
         help="Visual transition style (default: journey)",
     )
     new_parser.add_argument("--audience", default="general")
+    new_parser.add_argument(
+        "--business-ready",
+        action="store_true",
+        help="Prepare the project for a technical privacy audit and one-time Prodamus payments",
+    )
+    new_parser.add_argument(
+        "--privacy-readiness",
+        action="store_true",
+        help="Include the technical privacy-readiness workflow",
+    )
+    new_parser.add_argument(
+        "--payment-gateway",
+        choices=["none", "prodamus"],
+        help="Prepare a one-time payment integration (default: none, or prodamus with --business-ready)",
+    )
     new_parser.add_argument("--force", action="store_true")
     new_parser.set_defaults(func=cmd_new)
 

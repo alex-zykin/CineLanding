@@ -33,6 +33,8 @@ class ProjectManifestTests(unittest.TestCase):
                 mode="redesign",
                 motion_style="reveal",
                 audience="design teams",
+                privacy_readiness=True,
+                payment_gateway="prodamus",
             )
 
             payload = json.loads((root / "cinelanding.json").read_text(encoding="utf-8"))
@@ -41,6 +43,13 @@ class ProjectManifestTests(unittest.TestCase):
             self.assertEqual(payload["project"]["motion_style"], "reveal")
             self.assertEqual(payload["project"]["locales"], ["en-US", "ru-RU"])
             self.assertEqual(payload["project"]["default_locale"], "en-US")
+            self.assertEqual(
+                payload["project"]["business"],
+                {
+                    "privacy_readiness": True,
+                    "payment_gateway": "prodamus",
+                },
+            )
             self.assertEqual(
                 set(payload["scenes"][0]["copy"]),
                 {"en-US", "ru-RU"},
@@ -52,6 +61,25 @@ class ProjectManifestTests(unittest.TestCase):
             self.assertEqual(loaded_root, root)
             self.assertEqual(loaded.to_dict(), project.to_dict())
             self.assertEqual(loaded.validate(require_scenes=True), [])
+
+    def test_validation_rejects_unknown_payment_gateway(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            _, project = create_project(
+                Path(temporary) / "demo",
+                name="Demo",
+                source_url=None,
+                locales=["en-US"],
+                default_locale="en-US",
+                mode="from-scratch",
+                motion_style="journey",
+                audience="general",
+            )
+            project.payment_gateway = "mystery-pay"
+
+            self.assertIn(
+                "payment_gateway must be one of ['none', 'prodamus']",
+                project.validate(),
+            )
 
     def test_validation_requires_a_headline_for_every_locale(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -217,6 +245,13 @@ class ProjectManifestTests(unittest.TestCase):
 
             self.assertEqual(readiness["mode"], "from-scratch")
             self.assertEqual(readiness["motion_style"], "reveal")
+            self.assertEqual(
+                readiness["business"],
+                {
+                    "privacy_readiness": False,
+                    "payment_gateway": "none",
+                },
+            )
 
 
 if __name__ == "__main__":

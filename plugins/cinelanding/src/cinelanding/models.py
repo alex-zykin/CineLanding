@@ -14,6 +14,7 @@ from urllib.parse import urlparse
 SUPPORTED_LOCALES = {"en-US", "ru-RU"}
 SUPPORTED_MODES = {"redesign", "from-scratch"}
 SUPPORTED_MOTION_STYLES = {"journey", "reveal"}
+SUPPORTED_PAYMENT_GATEWAYS = {"none", "prodamus"}
 SUPPORTED_ASPECT_RATIOS = {"1:1", "4:3", "3:4", "16:9", "9:16", "21:9", "adaptive"}
 SCENE_ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]{0,62}$")
 
@@ -102,12 +103,17 @@ class Project:
     source_url: Optional[str]
     audience: str
     created_at: str
+    privacy_readiness: bool = False
+    payment_gateway: str = "none"
     scenes: List[Scene] = field(default_factory=list)
     schema_version: int = 2
 
     @classmethod
     def from_dict(cls, value: Dict[str, Any]) -> "Project":
         project = value.get("project", value)
+        business = project.get("business", {})
+        if not isinstance(business, dict):
+            business = {}
         scenes = [Scene.from_dict(item) for item in value.get("scenes", [])]
         source_url = project.get("source_url") or None
         schema_version = int(value.get("schema_version", 1))
@@ -128,6 +134,8 @@ class Project:
             source_url=source_url,
             audience=str(project.get("audience", "")),
             created_at=str(project.get("created_at", "")),
+            privacy_readiness=business.get("privacy_readiness", False),
+            payment_gateway=str(business.get("payment_gateway", "none")),
             scenes=scenes,
             schema_version=schema_version,
         )
@@ -145,6 +153,10 @@ class Project:
                 "source_url": self.source_url,
                 "audience": self.audience,
                 "created_at": self.created_at,
+                "business": {
+                    "privacy_readiness": self.privacy_readiness,
+                    "payment_gateway": self.payment_gateway,
+                },
             },
             "scenes": [asdict(scene) for scene in self.scenes],
         }
@@ -170,6 +182,10 @@ class Project:
             issues.append(f"mode must be one of {sorted(SUPPORTED_MODES)}")
         if self.motion_style not in SUPPORTED_MOTION_STYLES:
             issues.append(f"motion_style must be one of {sorted(SUPPORTED_MOTION_STYLES)}")
+        if not isinstance(self.privacy_readiness, bool):
+            issues.append("privacy_readiness must be true or false")
+        if self.payment_gateway not in SUPPORTED_PAYMENT_GATEWAYS:
+            issues.append(f"payment_gateway must be one of {sorted(SUPPORTED_PAYMENT_GATEWAYS)}")
         if self.mode == "redesign" and not self.source_url:
             issues.append("redesign mode requires source_url")
         if self.mode == "from-scratch" and self.source_url:

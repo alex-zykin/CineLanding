@@ -1,7 +1,7 @@
 {
   "name": "cinelanding",
   "version": "0.2.0",
-  "description": "CLI and agent workflow for landing pages with cinematic scroll-linked transitions.",
+  "description": "CLI and agent workflow for cinematic landing pages with optional privacy-readiness and payment modules.",
   "author": {
     "name": "Alex Zykin",
     "url": "https://github.com/alex-zykin"
@@ -14,13 +14,15 @@
     "scrollytelling",
     "scroll-video",
     "kie-ai",
+    "privacy-readiness",
+    "prodamus",
     "agent"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "CineLanding",
     "shortDescription": "Build landing pages with cinematic transitions.",
-    "longDescription": "CineLanding helps an agent redesign a public website or start from a brief. It includes a dependency-free CLI, free mock checks, an optional KIE.ai adapter, media processing, and instructions for building the result in a target frontend.",
+    "longDescription": "CineLanding helps an agent redesign a public website or start from a brief. It includes a dependency-free CLI, free mock checks, an optional KIE.ai adapter, media processing, frontend delivery, a technical personal-data readiness workflow, and a Prodamus payment scaffold.",
     "developerName": "Alex Zykin",
     "category": "Developer Tools",
     "capabilities": ["Interactive", "Write"],
@@ -28,6 +30,7 @@
     "defaultPrompt": [
       "Redesign this website as a cinematic landing page.",
       "Create a landing page from this brief and these assets.",
+      "Create a business-ready landing project with a technical privacy review and Prodamus scaffold.",
       "Validate this CineLanding project before generation."
     ],
     "brandColor": "#E65C2E"
