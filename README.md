@@ -6,11 +6,11 @@ CineLanding is an open source CLI and agent plugin for landing pages with cinema
 
 There is no hosted editor, account system, billing layer, or deployment service in this repository. Those may be built later around the same core. The project domain is [cinelanding.ru](https://cinelanding.ru).
 
-## Live showcase
+## Live MVP
 
-[Open the ORBIT showcase](https://cinelanding.alexey3484.chatgpt.site). ORBIT is a fictional independent cinema presented as a finished client landing page rather than a product tour. Its full-screen opening maps page scroll to 120 extracted frames from a reviewed KIE transition. Switch to Russian from the header; the choice is kept in the URL and in your browser.
+[Open the CineLanding MVP](https://cinelanding.alexey3484.chatgpt.site). The product landing explains the redesign workflow, the initial per-project price, the open-source option, and the business-ready modules. Its full-screen opening maps page scroll to 120 frames from ORBIT, the fictional client project used as a finished-result example. Switch to Russian from the header; the choice is kept in the URL and in your browser.
 
-The implementation lives in [`site/`](site). It shows the intended end result of the workflow: semantic page content layered over a progressively loaded canvas sequence, a useful reduced-motion state, and a complete responsive frontend. The final section discloses that ORBIT is fictional and links back to CineLanding.
+The implementation lives in [`site/`](site). It keeps meaningful copy in the DOM over a progressively loaded canvas sequence, includes a useful reduced-motion state, validates a public source address locally in the browser, and adapts across screen sizes. The current form is an honest front-end preview; accounts, saved requests, and live checkout are the next application layer.
 
 ## Two ways to start
 
