@@ -135,6 +135,8 @@ Do not automatically repeat a task in `submission_unknown`. KIE may have accepte
 
 API details: [Seedance 2](https://docs.kie.ai/market/bytedance/seedance-2), [task status](https://docs.kie.ai/market/common/get-task-detail), [file upload](https://docs.kie.ai/file-upload-api/upload-file-base-64), and [account credits](https://docs.kie.ai/common-api/get-account-credits/).
 
+> **Referral disclosure:** If you sign up for KIE through [this referral link](https://kie.ai?ref=bf576947fc8e5267be88441694cb6a70), the CineLanding maintainer may receive a reward. Using the link is optional and doesn't affect CineLanding's features, license, or documentation.
+
 ## Build the final landing page
 
 CineLanding owns the media project, not the website that consumes it. When the requested result is a working page, the agent opens the target frontend repository, follows its framework and design system, moves approved assets through its normal asset pipeline, and implements the page there.

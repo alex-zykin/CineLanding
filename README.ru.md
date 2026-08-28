@@ -135,6 +135,8 @@ python plugins/cinelanding/scripts/cinelanding.py wait cinelanding-work/acme <ta
 
 Документация API: [Seedance 2](https://docs.kie.ai/market/bytedance/seedance-2), [статус задачи](https://docs.kie.ai/market/common/get-task-detail), [загрузка файлов](https://docs.kie.ai/file-upload-api/upload-file-base-64), [баланс кредитов](https://docs.kie.ai/common-api/get-account-credits/).
 
+> **Реферальная ссылка:** Если вы зарегистрируетесь в KIE по [этой ссылке](https://kie.ai?ref=bf576947fc8e5267be88441694cb6a70), автор CineLanding может получить вознаграждение. Использовать ссылку необязательно; это никак не влияет на возможности, лицензию или документацию CineLanding.
+
 ## Сборка готового лендинга
 
 CineLanding отвечает за медиапроект, а не за сайт, который его использует. Когда нужен готовый лендинг, агент открывает целевой frontend-репозиторий, следует его стеку и дизайн-системе, переносит утвержденные материалы через штатный asset pipeline и собирает страницу там.
