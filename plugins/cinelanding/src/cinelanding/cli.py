@@ -121,7 +121,7 @@ def cmd_submit(args: argparse.Namespace) -> int:
     root, project = load_project(args.path)
     request = request_for(root, project, args.scene, args.model, args.callback_url)
     fingerprint = request.fingerprint()
-    existing = find_job_by_fingerprint(root, fingerprint)
+    existing = find_job_by_fingerprint(root, fingerprint, args.provider)
     if existing and not args.force_new:
         emit({"reused": True, "job": existing.to_dict()})
         return 0

@@ -78,7 +78,7 @@ Successful result URLs are temporary. Download them promptly. `download` accepts
 
 ## Duplicate requests and timeouts
 
-The CLI fingerprints every request. Submitting the same request reuses its recorded job instead of creating another task. Local anchors are identified by their SHA-256 contents and file size, so a changed image at the same path gets a new fingerprint. `--force-new` bypasses reuse and can create another paid task. Use it only when the user intends a separate generation.
+The CLI fingerprints every request and scopes duplicate lookup to the selected provider. A matching mock job does not block the first KIE submission; submitting the same unchanged request to KIE again reuses its recorded KIE job instead of creating another paid task. Local anchors are identified by their SHA-256 contents and file size, so a changed image at the same path gets a new fingerprint. `--force-new` bypasses same-provider reuse and can create another paid task. Use it only when the user intends a separate generation.
 
 If submission times out, the CLI records `submission_unknown`. KIE may have accepted the request before the response was lost. Do not resubmit and do not use `--force-new` as a retry. Check the KIE dashboard and account history first. Continue only if the provider task can be identified or the user approves a separate attempt after reviewing the possible duplicate cost.
 

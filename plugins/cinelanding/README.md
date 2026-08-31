@@ -42,7 +42,7 @@ cinelanding doctor
 
 `--business-ready` selects a technical privacy-readiness review and a one-time Prodamus integration workflow. The modules can also be selected independently with `--privacy-readiness` and `--payment-gateway prodamus`. They create working files under `business/`; those files are not proof of legal compliance or a live payment connection.
 
-The request fingerprint reuses a recorded job when its settings and local frame contents have not changed. `--force-new` skips that protection and can create another paid task.
+Within each provider, the request fingerprint reuses a recorded job when its settings and local frame contents have not changed. A mock record does not block the first matching KIE submission. `--force-new` skips same-provider protection and can create another paid task.
 
 ## Skill references
 

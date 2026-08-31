@@ -199,9 +199,11 @@ def upsert_job(root: Path, job: GenerationJob) -> None:
     save_jobs(root, jobs)
 
 
-def find_job_by_fingerprint(root: Path, fingerprint: str) -> Optional[GenerationJob]:
+def find_job_by_fingerprint(
+    root: Path, fingerprint: str, provider: str
+) -> Optional[GenerationJob]:
     for job in load_jobs(root):
-        if job.fingerprint == fingerprint:
+        if job.provider == provider and job.fingerprint == fingerprint:
             return job
     return None
 

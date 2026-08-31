@@ -112,6 +112,8 @@ python plugins/cinelanding/scripts/cinelanding.py jobs cinelanding-work/acme
 
 Mock-задача возвращает служебный маркер `mock://`, а не видео для скачивания. Локальный путь через FFmpeg проверяется отдельно:
 
+Защита от дублей учитывает провайдера: сохраненная mock-задача не блокирует первую отправку в KIE, а повтор того же неизмененного запроса в KIE переиспользует уже записанную KIE-задачу.
+
 ```bash
 python plugins/cinelanding/scripts/cinelanding.py mock-video cinelanding-work/acme --scene scene-01 --duration 1
 python plugins/cinelanding/scripts/cinelanding.py extract cinelanding-work/acme artifacts/scene-01/mock.mp4 --scene scene-01 --fps 24

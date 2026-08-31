@@ -16,6 +16,7 @@ if str(SRC) not in sys.path:
 
 from cinelanding.cli import main
 from cinelanding.errors import SubmissionUnknownError
+from cinelanding.models import GenerationJob
 from cinelanding.project import create_project, load_jobs
 
 
@@ -188,6 +189,54 @@ class CliSubmissionTests(unittest.TestCase):
             jobs = load_jobs(root)
             self.assertEqual(len(jobs), 1)
             self.assertEqual(jobs[0].credits_consumed, 0.0)
+
+    def test_mock_job_does_not_block_kie_but_kie_job_is_reused(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = create_ready_project(Path(temporary))
+            mock_code, mock_output = run_cli(
+                "submit",
+                str(root),
+                "--scene",
+                "scene-01",
+                "--provider",
+                "mock",
+            )
+            provider = Mock()
+            provider.submit.side_effect = lambda request: GenerationJob(
+                task_id="kie-task-1",
+                provider="kie",
+                model=request.model,
+                state="waiting",
+                scene_id=request.scene_id,
+                fingerprint=request.fingerprint(),
+            )
+            arguments = (
+                "submit",
+                str(root),
+                "--scene",
+                "scene-01",
+                "--provider",
+                "kie",
+                "--confirm-spend",
+            )
+
+            with patch("cinelanding.cli.provider_for", return_value=provider):
+                first_kie_code, first_kie = run_cli(*arguments)
+                second_kie_code, second_kie = run_cli(*arguments)
+
+            self.assertEqual(mock_code, 0)
+            self.assertFalse(mock_output["reused"])
+            self.assertEqual(first_kie_code, 0)
+            self.assertFalse(first_kie["reused"])
+            self.assertEqual(first_kie["job"]["provider"], "kie")
+            self.assertEqual(second_kie_code, 0)
+            self.assertTrue(second_kie["reused"])
+            self.assertEqual(second_kie["job"]["task_id"], "kie-task-1")
+            provider.submit.assert_called_once()
+            self.assertEqual(
+                [job.provider for job in load_jobs(root)],
+                ["mock", "kie"],
+            )
 
     def test_changed_local_frame_creates_a_new_request_fingerprint(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

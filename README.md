@@ -112,6 +112,8 @@ python plugins/cinelanding/scripts/cinelanding.py jobs cinelanding-work/acme
 
 A mock job returns a `mock://` marker instead of downloadable media. Test the FFmpeg path separately:
 
+Duplicate protection is provider-scoped: a recorded mock job does not block the first KIE submission, while repeating the same unchanged request to KIE reuses the recorded KIE job.
+
 ```bash
 python plugins/cinelanding/scripts/cinelanding.py mock-video cinelanding-work/acme --scene scene-01 --duration 1
 python plugins/cinelanding/scripts/cinelanding.py extract cinelanding-work/acme artifacts/scene-01/mock.mp4 --scene scene-01 --fps 24
