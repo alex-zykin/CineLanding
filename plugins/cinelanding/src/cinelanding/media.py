@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -12,8 +13,8 @@ from urllib.request import Request, urlopen
 
 from . import __version__
 from .errors import ProjectError, ProviderError
-from .models import SCENE_ID_PATTERN
-from .project import atomic_write_json
+from .models import SCENE_ID_PATTERN, is_http_url
+from .project import atomic_write_json, get_scene, load_project, resolve_media_reference
 
 
 def tool_path(name: str) -> str | None:
@@ -53,15 +54,66 @@ def _safe_project_file(root: Path, value: Path) -> Path:
     return resolved
 
 
+MOCK_DIMENSIONS = {
+    "1:1": (720, 720),
+    "4:3": (960, 720),
+    "3:4": (720, 960),
+    "16:9": (1280, 720),
+    "9:16": (720, 1280),
+    "21:9": (1680, 720),
+    "adaptive": (1280, 720),
+}
+MOCK_FPS = 24
+
+
+def _local_mock_anchor(root: Path, reference: str, label: str) -> Path:
+    if is_http_url(reference):
+        raise ProjectError(
+            f"mock-video requires a local {label}; copy the reviewed anchor into the project first"
+        )
+    return Path(resolve_media_reference(root, reference))
+
+
 def create_mock_video(root: Path, scene_id: str, duration: float = 1.0) -> Path:
     if not SCENE_ID_PATTERN.fullmatch(scene_id):
         raise ProjectError("scene id must be lower-case hyphen-case")
+    try:
+        duration_value = float(duration)
+    except (TypeError, ValueError) as exc:
+        raise ProjectError("mock-video duration must be between 0.25 and 30 seconds") from exc
+    if not math.isfinite(duration_value) or not 0.25 <= duration_value <= 30:
+        raise ProjectError("mock-video duration must be between 0.25 and 30 seconds")
     ffmpeg = tool_path("ffmpeg")
     if not ffmpeg:
         raise ProjectError("ffmpeg is required to create a mock video")
-    output_dir = root.resolve() / "artifacts" / scene_id
-    output_dir.mkdir(parents=True, exist_ok=True)
-    output = output_dir / "mock.mp4"
+
+    project_root, project = load_project(root)
+    scene = get_scene(project, scene_id)
+    first_frame = _local_mock_anchor(project_root, scene.first_frame, "first_frame")
+    last_frame = _local_mock_anchor(project_root, scene.last_frame, "last_frame")
+    width, height = MOCK_DIMENSIONS[scene.aspect_ratio]
+    duration_text = f"{duration_value:.6g}"
+    transition_duration = min(0.75, duration_value / 2)
+    transition_offset = (duration_value - transition_duration) / 2
+    transition_text = f"{transition_duration:.6g}"
+    offset_text = f"{transition_offset:.6g}"
+    prepare = (
+        f"scale={width}:{height}:force_original_aspect_ratio=decrease:flags=lanczos,"
+        f"pad={width}:{height}:(ow-iw)/2:(oh-ih)/2:color=black,"
+        "setsar=1"
+    )
+    filter_graph = (
+        f"[0:v]{prepare}[first];"
+        f"[1:v]{prepare}[last];"
+        f"[first][last]xfade=transition=fade:duration={transition_text}:"
+        f"offset={offset_text},format=yuv420p[outv]"
+    )
+
+    output = _safe_project_file(
+        project_root,
+        Path("artifacts") / scene_id / "mock.mp4",
+    )
+    output.parent.mkdir(parents=True, exist_ok=True)
     _run(
         [
             ffmpeg,
@@ -69,17 +121,31 @@ def create_mock_video(root: Path, scene_id: str, duration: float = 1.0) -> Path:
             "-loglevel",
             "error",
             "-y",
-            "-f",
-            "lavfi",
+            "-loop",
+            "1",
+            "-framerate",
+            str(MOCK_FPS),
             "-i",
-            "testsrc2=size=1280x720:rate=24",
+            str(first_frame),
+            "-loop",
+            "1",
+            "-framerate",
+            str(MOCK_FPS),
+            "-i",
+            str(last_frame),
+            "-filter_complex",
+            filter_graph,
+            "-map",
+            "[outv]",
             "-t",
-            str(duration),
+            duration_text,
             "-an",
             "-c:v",
             "libx264",
             "-pix_fmt",
             "yuv420p",
+            "-movflags",
+            "+faststart",
             str(output),
         ]
     )

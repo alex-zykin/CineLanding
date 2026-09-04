@@ -23,7 +23,7 @@ const mono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL('https://cinelanding.ru'),
   title: 'CineLanding — Turn an old website into a cinematic landing page',
-  description: 'Turn an existing website into a cinematic landing page with optional technical privacy and Prodamus launch modules.',
+  description: 'Turn an existing website into a cinematic landing page, from a free concept to a responsive build and source code.',
   alternates: {
     canonical: '/',
   },
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     url: '/',
     siteName: 'CineLanding',
     title: 'CineLanding — Turn an old website into a cinematic landing page',
-    description: 'Turn an existing website into a cinematic landing page with optional technical privacy and Prodamus launch modules.',
+    description: 'Turn an existing website into a cinematic landing page, from a free concept to a responsive build and source code.',
     images: [
       {
         url: '/og.png',
@@ -48,14 +48,14 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'CineLanding — Turn an old website into a cinematic landing page',
-    description: 'Turn an existing website into a cinematic landing page with optional technical privacy and Prodamus launch modules.',
+    description: 'Turn an existing website into a cinematic landing page, from a free concept to a responsive build and source code.',
     images: ['/og.png'],
   },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body className={`${display.variable} ${sans.variable} ${mono.variable}`}>{children}</body>
     </html>
   );

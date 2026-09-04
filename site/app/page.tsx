@@ -3,24 +3,33 @@
 import Image from 'next/image';
 import { useEffect, useId, useState, type FormEvent } from 'react';
 import ScrollSequence from './scroll-sequence';
+import {
+  STUDIO_OPTION_ORDER,
+  STUDIO_PRICING_CATALOG,
+  createStudioPriceSummary,
+  formatRubleAmount,
+} from './pricing.mjs';
 import { normalizeSourceUrl, SourceUrlError } from './source-url.mjs';
 
 type Locale = 'en' | 'ru';
+type StudioOptionCode = 'privacy-readiness' | 'prodamus-setup';
 
 const content = {
   en: {
     pageTitle: 'CineLanding — Turn an old website into a cinematic landing page',
-    pageDescription: 'Turn an existing website into a cinematic landing page with optional technical privacy and Prodamus launch modules.',
+    pageDescription: 'Turn an existing website into a cinematic landing page, from a free concept to a responsive build and source code.',
     brand: 'CINELANDING',
     brandNote: 'Managed web studio',
     homeLabel: 'CineLanding home',
     navLabel: 'Primary navigation',
     nav: [
       ['How it works', '#workflow'],
-      ['Launch-ready', '#business-ready'],
       ['Example', '#example'],
       ['Pricing', '#pricing'],
     ],
+    studioLabel: 'Studio',
+    studioNote: 'Demo',
+    studioAriaLabel: 'Open the CineLanding demo workspace',
     switchLabel: 'Переключить на русский',
     sequenceLabel: 'CineLanding / Project 01',
     showcaseLabel: 'How CineLanding turns an old website into a cinematic landing page',
@@ -49,20 +58,20 @@ const content = {
       {
         kicker: '03 / Build the real thing',
         title: <>One scroll.<br />A new first impression.</>,
-        body: 'After payment, CineLanding prepares the cinematic sequence, responsive page, source code, and the selected launch modules.',
+        body: 'After payment, CineLanding prepares the cinematic sequence, responsive page, source code, and a handoff you can keep.',
         align: 'right',
       },
     ],
     workflow: {
       kicker: 'A clear route from old to new',
       title: <>No mystery.<br /><em>Just three decisions.</em></>,
-      body: 'You see what happens at every stage, what is free, and what the 5,000 ₽ build includes before you spend anything.',
+      body: 'You see what happens at every stage, what is free, and what the 9,900 ₽ build includes before you spend anything.',
       action: 'See the scope',
       stepLabel: 'Step',
       steps: [
         ['01', 'Site review', 'We map the offer, content, audience, and what is worth keeping.', 'Included'],
         ['02', 'Free direction', 'Page structure, visual tone, and a scene plan you can judge.', 'Before payment'],
-        ['03', 'Managed build', 'A responsive landing, one scroll scene, source code, and selected launch modules.', '5,000 ₽'],
+        ['03', 'Managed build', 'A responsive landing, one scroll scene, source code, and a practical handoff.', '9,900 ₽'],
       ],
     },
     concept: {
@@ -104,19 +113,19 @@ const content = {
     },
     pricing: {
       kicker: 'One project, one clear price',
-      title: <>Start free.<br /><em>Build it for 5,000 ₽.</em></>,
+      title: <>Start with a free concept.<br /><em>Build the site for 9,900 ₽.</em></>,
       body: 'The first paid offer is intentionally simple: one old website becomes one polished landing page. No subscription and no surprise usage bill.',
       action: 'Open the form',
-      cardLabel: 'Managed draft',
-      price: '5,000 ₽',
-      priceNote: 'per project',
+      cardLabel: 'Managed site',
+      priceNote: 'base site',
       urlLabel: 'Your current website',
       urlPlaceholder: 'example.com',
       submit: 'Check this address',
       formNote: 'This preview checks the address in your browser only. It does not inspect, send, or save the website yet.',
-      readyTitle: 'The address looks ready',
-      readyBody: 'The next MVP step for {host} is sign-in, a short brief, and a saved concept request.',
-      scope: ['One landing page', 'One language', 'One scroll sequence', 'One small revision', 'Technical privacy report', 'Prodamus-ready scaffold'],
+      readyTitle: 'Ready for a demo project',
+      readyBody: "CineLanding hasn't analyzed the site or saved the address for {host}. Continue in the demo workspace to prepare the brief.",
+      readyAction: 'Open demo workspace',
+      scope: ['One responsive landing page', 'One website language', 'One scroll sequence', 'Source code and one small revision'],
       errors: {
         empty: 'Enter the address of the website you want to redesign.',
         invalid: 'That does not look like a complete website address.',
@@ -150,7 +159,7 @@ const content = {
   },
   ru: {
     pageTitle: 'CineLanding — превращаем старые сайты в кинематографичные лендинги',
-    pageDescription: 'Превратите действующий сайт в кинематографичный лендинг с технической проверкой данных и модулем подключения Prodamus.',
+    pageDescription: 'Превратите действующий сайт в кинематографичный лендинг: от бесплатного концепта до адаптивной сборки с исходным кодом.',
     brand: 'CINELANDING',
     brandNote: 'Сервис лендингов',
     homeLabel: 'Главная CineLanding',
@@ -161,6 +170,9 @@ const content = {
       ['Пример', '#example'],
       ['Цена', '#pricing'],
     ],
+    studioLabel: 'Кабинет',
+    studioNote: 'Демо',
+    studioAriaLabel: 'Открыть демо-кабинет CineLanding',
     switchLabel: 'Switch to English',
     sequenceLabel: 'CineLanding / Проект 01',
     showcaseLabel: 'Как CineLanding превращает старый сайт в кинематографичный лендинг',
@@ -189,20 +201,20 @@ const content = {
       {
         kicker: '03 / Собираем настоящий сайт',
         title: <>Один скролл.<br />Другое первое впечатление.</>,
-        body: 'После оплаты CineLanding готовит покадровую сцену, адаптивную страницу, исходный код и выбранные модули запуска.',
+        body: 'После оплаты CineLanding готовит покадровую сцену, адаптивную страницу, исходный код и выбранные дополнения.',
         align: 'right',
       },
     ],
     workflow: {
       kicker: 'Понятный путь от старого к новому',
       title: <>Никакой магии.<br /><em>Три понятных решения.</em></>,
-      body: 'Вы заранее видите каждый этап, бесплатную часть и состав сборки за 5 000 ₽ — до любых расходов.',
+      body: 'Вы заранее видите каждый этап, бесплатную часть и состав сборки за 9 900 ₽ — до любых расходов.',
       action: 'Посмотреть состав',
       stepLabel: 'Этап',
       steps: [
         ['01', 'Разбор сайта', 'Собираем предложение, контент, аудиторию и то, что стоит сохранить.', 'Включено'],
         ['02', 'Бесплатное направление', 'Структура страницы, визуальный характер и план сцен.', 'До оплаты'],
-        ['03', 'Готовая сборка', 'Адаптивный лендинг, одна scroll-сцена, исходный код и выбранные модули запуска.', '5 000 ₽'],
+        ['03', 'Готовая сборка', 'Адаптивный лендинг, одна scroll-сцена, исходный код и практичная передача проекта.', '9 900 ₽'],
       ],
     },
     concept: {
@@ -219,44 +231,54 @@ const content = {
       ],
     },
     businessReady: {
-      kicker: 'Не только дизайн',
-      title: <>Техническая основа<br /><em>для запуска в России.</em></>,
-      body: 'Добавьте к проекту проверку готовности к требованиям 152-ФЗ и модуль оплаты Prodamus. CineLanding подготовит рабочие файлы, контракт реализации и чек-лист запуска. Вам останется подключить свои реквизиты и пройти финальные проверки.',
-      action: 'Создать проект с двумя модулями',
+      kicker: 'Дополнения для запуска',
+      title: <>Подключите только то,<br /><em>что нужно.</em></>,
+      body: 'Для сайтов на русском языке доступны два необязательных дополнения. Они не входят в базовую стоимость 9 900 ₽ и выбираются отдельно.',
+      action: 'Рассчитать стоимость',
       modules: [
         {
+          code: 'privacy-readiness',
           index: '01',
-          status: 'Технический аудит',
-          title: 'Проверка готовности к 152-ФЗ',
-          body: 'Проверяем, где собираются и хранятся персональные данные, какие сервисы их получают, как устроены доступ, логи, сроки хранения и удаление.',
-          points: ['Карта потоков данных', 'Подтверждения и риски', 'Задачи на исправление', 'Проверки окружения'],
-          note: 'Это техническая проверка, а не юридическое заключение или сертификат соответствия.',
+          status: 'Дополнение · 1 990 ₽',
+          title: 'Техническая подготовка по 152‑ФЗ',
+          body: 'Проверяем технический путь персональных данных: формы, хранение, доступы, внешние сервисы, журналы и удаление.',
+          points: ['Карта потоков данных', 'Находки и приоритеты', 'Рекомендации по настройке', 'Чек-лист повторной проверки'],
+          note: 'Это техническая подготовка, а не юридическое заключение, гарантия или сертификат соответствия.',
         },
         {
+          code: 'prodamus-setup',
           index: '02',
-          status: 'Готово к подключению',
-          title: 'Модуль оплаты Prodamus',
-          body: 'Готовим серверный контракт оплаты: идентификатор заказа, проверку подписи webhook, защиту от повторной обработки и журнал платежей.',
-          points: ['Сумма с сервера', 'Проверенный webhook', 'Защита от дублей', 'Контрольный платёж'],
-          note: 'Для запуска нужны кабинет Prodamus, серверные реквизиты, backend и успешный тестовый платёж.',
+          status: 'Дополнение · 1 990 ₽',
+          title: 'Подключение Prodamus',
+          body: 'Готовим серверный заказ, проверку подписанных уведомлений, защиту от повторной обработки и понятный журнал статусов.',
+          points: ['Сумма с сервера', 'Проверка подписи', 'Идемпотентная обработка', 'Чек-лист тестового платежа'],
+          note: 'Для запуска нужны активный кабинет Prodamus, серверные реквизиты, backend и успешный контрольный платёж.',
         },
       ],
     },
     pricing: {
-      kicker: 'Один проект — одна понятная цена',
-      title: <>Начните бесплатно.<br /><em>Сборка — 5 000 ₽.</em></>,
-      body: 'Первое предложение намеренно простое: один старый сайт превращается в один аккуратный лендинг. Без подписки и неожиданного счёта за генерации.',
+      kicker: 'Базовый сайт и дополнения',
+      title: <>Концепт — бесплатно.<br /><em>Базовый сайт — 9 900 ₽.</em></>,
+      body: 'В базовую стоимость входит один адаптивный лендинг. Дополнения для запуска в России необязательны и считаются отдельно.',
       action: 'Открыть форму',
-      cardLabel: 'Готовая сборка',
-      price: '5 000 ₽',
-      priceNote: 'за проект',
+      cardLabel: 'Предварительный расчёт',
+      priceNote: 'итого',
+      optionLegend: 'Дополнения для запуска в России',
+      optionHint: 'По умолчанию выключены. Можно выбрать одно, оба или ни одного.',
+      totalLabel: 'Итоговая стоимость',
+      checkoutNote: 'Предварительный расчёт. Оплата в демо не подключена.',
+      options: [
+        ['privacy-readiness', 'Техническая подготовка по 152‑ФЗ', 'Технический разбор потоков персональных данных'],
+        ['prodamus-setup', 'Подключение Prodamus', 'Код интеграции и безопасный контракт обработки платежа'],
+      ],
       urlLabel: 'Адрес действующего сайта',
       urlPlaceholder: 'example.ru',
       submit: 'Проверить адрес',
       formNote: 'Сейчас форма проверяет адрес только в вашем браузере. Она ещё не анализирует, не отправляет и не сохраняет сайт.',
-      readyTitle: 'Адрес подходит для проекта',
-      readyBody: 'Следующий шаг MVP для {host} — вход, короткий бриф и сохранённая заявка на концепт.',
-      scope: ['Один лендинг', 'Один язык', 'Одна scroll-сцена', 'Одна небольшая правка', 'Технический отчёт по данным', 'Заготовка Prodamus'],
+      readyTitle: 'Можно открыть демо-проект',
+      readyBody: 'CineLanding ещё не анализировал сайт и не сохранял адрес {host}. Продолжите в демо-кабинете, чтобы заполнить бриф.',
+      readyAction: 'Открыть демо-кабинет',
+      scope: ['Один адаптивный лендинг', 'Один язык сайта', 'Одна scroll-сцена', 'Исходный код и одна небольшая правка'],
       errors: {
         empty: 'Укажите адрес сайта, который хотите переделать.',
         invalid: 'Похоже, это не полный адрес сайта.',
@@ -297,9 +319,22 @@ export default function Home() {
   const [localeReady, setLocaleReady] = useState(false);
   const [sourceUrl, setSourceUrl] = useState('');
   const [sourceHost, setSourceHost] = useState('');
+  const [validatedSourceUrl, setValidatedSourceUrl] = useState('');
   const [sourceError, setSourceError] = useState('');
+  const [selectedOptions, setSelectedOptions] = useState<StudioOptionCode[]>([]);
   const sourceInputId = useId();
   const t = content[locale];
+  const pricedOptions = locale === 'ru' ? selectedOptions : [];
+  const pricingSummary = createStudioPriceSummary(
+    pricedOptions,
+    locale === 'ru' ? 'ru-RU' : 'en-US',
+  );
+  const workspaceUrl = (() => {
+    if (!validatedSourceUrl) return '';
+    const query = new URLSearchParams({ mode: 'redesign', url: validatedSourceUrl, lang: locale });
+    for (const option of pricedOptions) query.append('option', option);
+    return `/app/new?${query.toString()}`;
+  })();
 
   useEffect(() => {
     const requested = new URLSearchParams(window.location.search).get('lang');
@@ -322,14 +357,30 @@ export default function Home() {
     if (!localeReady) return;
 
     document.documentElement.lang = locale;
-    document.title = t.pageTitle;
-    document.querySelector('meta[name="description"]')?.setAttribute('content', t.pageDescription);
+    const applyLocalizedMetadata = () => {
+      if (document.title !== t.pageTitle) document.title = t.pageTitle;
+      const description = document.querySelector('meta[name="description"]');
+      if (description?.getAttribute('content') !== t.pageDescription) {
+        description?.setAttribute('content', t.pageDescription);
+      }
+    };
+    applyLocalizedMetadata();
     window.localStorage.setItem('cinelanding-locale', locale);
 
     const url = new URL(window.location.href);
     if (locale === 'ru') url.searchParams.set('lang', 'ru');
     else url.searchParams.delete('lang');
     window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+
+    // Next's streamed metadata may settle after hydration on a remote build.
+    // Keep the user-selected locale authoritative if the head changes later.
+    const metadataObserver = new MutationObserver(applyLocalizedMetadata);
+    metadataObserver.observe(document.head, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+    return () => metadataObserver.disconnect();
   }, [locale, localeReady, t.pageDescription, t.pageTitle]);
 
   useEffect(() => {
@@ -353,15 +404,28 @@ export default function Home() {
     event.preventDefault();
     setSourceError('');
     setSourceHost('');
+    setValidatedSourceUrl('');
 
     try {
       const normalized = normalizeSourceUrl(sourceUrl);
       setSourceUrl(normalized.url);
       setSourceHost(normalized.hostname);
+      setValidatedSourceUrl(normalized.url);
     } catch (error) {
       const code = error instanceof SourceUrlError ? error.code : 'invalid';
       setSourceError(t.pricing.errors[code] ?? t.pricing.errors.invalid);
     }
+  };
+
+  const setOptionSelected = (code: StudioOptionCode, checked: boolean) => {
+    setSelectedOptions((current) => STUDIO_OPTION_ORDER.filter((option) => (
+      option === code ? checked : current.includes(option as StudioOptionCode)
+    )) as StudioOptionCode[]);
+  };
+
+  const switchLocale = () => {
+    if (locale === 'ru') setSelectedOptions([]);
+    setLocale(locale === 'en' ? 'ru' : 'en');
   };
 
   return (
@@ -376,15 +440,21 @@ export default function Home() {
           {t.nav.map(([label, href]) => <a href={href} key={href}>{label}</a>)}
         </nav>
 
-        <button
-          className="language-switch"
-          type="button"
-          onClick={() => setLocale(locale === 'en' ? 'ru' : 'en')}
-          aria-label={t.switchLabel}
-        >
-          <strong>{locale === 'en' ? 'EN' : 'RU'}</strong>
-          <span> / {locale === 'en' ? 'RU' : 'EN'}</span>
-        </button>
+        <div className="header-actions">
+          <a className="studio-link" href={`/sign-in?lang=${locale}`} aria-label={t.studioAriaLabel}>
+            <span>{t.studioLabel}</span>
+            <small>{t.studioNote}</small>
+          </a>
+          <button
+            className="language-switch"
+            type="button"
+            onClick={switchLocale}
+            aria-label={t.switchLabel}
+          >
+            <strong>{locale === 'en' ? 'EN' : 'RU'}</strong>
+            <span> / {locale === 'en' ? 'RU' : 'EN'}</span>
+          </button>
+        </div>
         <span className="page-progress" aria-hidden="true" />
       </header>
 
@@ -448,32 +518,34 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="business-section" id="business-ready">
-        <div className="business-heading reveal">
-          <p className="eyebrow">{t.businessReady.kicker}</p>
-          <h2>{t.businessReady.title}</h2>
-          <p>{t.businessReady.body}</p>
-        </div>
+      {locale === 'ru' ? (
+        <section className="business-section" id="business-ready">
+          <div className="business-heading reveal">
+            <p className="eyebrow">{content.ru.businessReady.kicker}</p>
+            <h2>{content.ru.businessReady.title}</h2>
+            <p>{content.ru.businessReady.body}</p>
+          </div>
 
-        <div className="business-grid">
-          {t.businessReady.modules.map((module) => (
-            <article className="business-card reveal" key={module.index}>
-              <div className="business-card-topline">
-                <span>{module.index}</span>
-                <strong>{module.status}</strong>
-              </div>
-              <h3>{module.title}</h3>
-              <p>{module.body}</p>
-              <ul>{module.points.map((point) => <li key={point}>{point}</li>)}</ul>
-              <small>{module.note}</small>
-            </article>
-          ))}
-        </div>
+          <div className="business-grid">
+            {content.ru.businessReady.modules.map((module) => (
+              <article className="business-card reveal" key={module.code}>
+                <div className="business-card-topline">
+                  <span>{module.index}</span>
+                  <strong>{module.status}</strong>
+                </div>
+                <h3>{module.title}</h3>
+                <p>{module.body}</p>
+                <ul>{module.points.map((point) => <li key={point}>{point}</li>)}</ul>
+                <small>{module.note}</small>
+              </article>
+            ))}
+          </div>
 
-        <a className="business-action reveal" href="#start">
-          <span>{t.businessReady.action}</span><b aria-hidden="true">↓</b>
-        </a>
-      </section>
+          <a className="business-action reveal" href="#pricing">
+            <span>{content.ru.businessReady.action}</span><b aria-hidden="true">↓</b>
+          </a>
+        </section>
+      ) : null}
 
       <section className="visit-section" id="pricing">
         <div className="visit-heading reveal">
@@ -487,7 +559,35 @@ export default function Home() {
 
         <article className="ticket-card project-card reveal" id="start">
           <div className="ticket-topline"><span>CINELANDING</span><span>{t.pricing.cardLabel}</span></div>
-          <div className="project-price">{t.pricing.price}<small>{t.pricing.priceNote}</small></div>
+          <output className="project-price" aria-live="polite">
+            {formatRubleAmount(pricingSummary.totalAmountMinor, locale)}
+            <small>{t.pricing.priceNote}</small>
+          </output>
+
+          {locale === 'ru' ? (
+            <fieldset className="project-options">
+              <legend>{content.ru.pricing.optionLegend}</legend>
+              <p>{content.ru.pricing.optionHint}</p>
+              <div className="project-option-list">
+                {content.ru.pricing.options.map(([code, label, detail]) => (
+                  <label className="project-option" key={code}>
+                    <input
+                      type="checkbox"
+                      checked={selectedOptions.includes(code)}
+                      onChange={(event) => setOptionSelected(code, event.target.checked)}
+                    />
+                    <span><strong>{label}</strong><small>{detail}</small></span>
+                    <b>+{formatRubleAmount(STUDIO_PRICING_CATALOG.options[code].amountMinor, locale)}</b>
+                  </label>
+                ))}
+              </div>
+              <div className="project-total-line">
+                <span>{content.ru.pricing.totalLabel}</span>
+                <output aria-live="polite">{formatRubleAmount(pricingSummary.totalAmountMinor, locale)}</output>
+              </div>
+              <small className="project-checkout-note">{content.ru.pricing.checkoutNote}</small>
+            </fieldset>
+          ) : null}
 
           <form className="project-form" onSubmit={handleSourceSubmit} noValidate>
             <label htmlFor={sourceInputId}>{t.pricing.urlLabel}</label>
@@ -496,7 +596,12 @@ export default function Home() {
                 id={sourceInputId}
                 inputMode="url"
                 name="source-url"
-                onChange={(event) => setSourceUrl(event.target.value)}
+                onChange={(event) => {
+                  setSourceUrl(event.target.value);
+                  setSourceHost('');
+                  setValidatedSourceUrl('');
+                  setSourceError('');
+                }}
                 placeholder={t.pricing.urlPlaceholder}
                 spellCheck={false}
                 type="url"
@@ -508,9 +613,14 @@ export default function Home() {
             </div>
             {sourceError ? <p className="project-message is-error" id={`${sourceInputId}-error`} role="alert">{sourceError}</p> : null}
             {sourceHost ? (
-              <div className="project-message is-ready" role="status">
-                <strong>{t.pricing.readyTitle}</strong>
-                <span>{t.pricing.readyBody.replace('{host}', sourceHost)}</span>
+              <div className="project-message is-ready">
+                <div className="project-ready-status" role="status">
+                  <strong>{t.pricing.readyTitle}</strong>
+                  <span className="project-ready-copy">{t.pricing.readyBody.replace('{host}', sourceHost)}</span>
+                </div>
+                <a className="project-continue" href={workspaceUrl}>
+                  {t.pricing.readyAction}<span aria-hidden="true">→</span>
+                </a>
               </div>
             ) : null}
             <p className="project-form-note" id={`${sourceInputId}-note`}>{t.pricing.formNote}</p>

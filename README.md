@@ -2,15 +2,33 @@
 
 [![English](https://img.shields.io/badge/lang-English-24292f.svg)](README.md) [![Русский](https://img.shields.io/badge/lang-%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9-24292f.svg)](README.ru.md)
 
-CineLanding is an open source CLI and agent plugin for landing pages with cinematic, scroll-linked transitions. It manages scene plans, anchor frames, generation jobs, downloads, and FFmpeg frame extraction. Once the media is approved, an agent can build the finished page in a target frontend repository. Optional business-ready modules add a technical personal-data review and a Prodamus payment-integration workflow.
+CineLanding is an open source CLI and agent plugin for landing pages with cinematic, scroll-linked transitions. It turns product evidence into a reviewable design contract, manages scene plans, anchor frames, generation jobs, downloads, and FFmpeg frame extraction, then guides an agent through frontend delivery and runtime quality checks. Managed Russian-language projects may optionally add a technical personal-data review and a Prodamus payment-integration workflow.
 
-There is no hosted editor, account system, billing layer, or deployment service in this repository. Those may be built later around the same core. The project domain is [cinelanding.ru](https://cinelanding.ru).
+The repository now includes a Vercel-native, browser-local Studio demo alongside the portable core. It exercises the project, concept, approval, demo-build, and preview flow without creating real accounts or calling a backend. Real authentication, server-side persistence, payments, KIE jobs, and generated-site publishing are not connected yet. The production architecture is documented in [`docs/saas-mvp.md`](docs/saas-mvp.md). The project domain is [cinelanding.ru](https://cinelanding.ru).
 
 ## Live MVP
 
-[Open the CineLanding MVP](https://cinelanding.alexey3484.chatgpt.site). The product landing explains the redesign workflow, the initial per-project price, the open-source option, and the business-ready modules. Its full-screen opening maps page scroll to 120 frames from ORBIT, the fictional client project used as a finished-result example. Switch to Russian from the header; the choice is kept in the URL and in your browser.
+[Open the CineLanding MVP](https://cinelanding.vercel.app). The product landing explains the redesign workflow, the **9,900 RUB** managed build, the open-source option, and two optional **1,990 RUB** launch additions shown only for Russian-language projects. Its full-screen opening maps page scroll to 120 frames from ORBIT, the fictional client project used as a finished-result example. Switch to Russian from the header; the choice is kept in the URL and in your browser.
 
-The implementation lives in [`site/`](site). It keeps meaningful copy in the DOM over a progressively loaded canvas sequence, includes a useful reduced-motion state, validates a public source address locally in the browser, and adapts across screen sizes. The current form is an honest front-end preview; accounts, saved requests, and live checkout are the next application layer.
+The implementation lives in [`site/`](site). It keeps meaningful copy in the DOM over a progressively loaded canvas sequence, includes a useful reduced-motion state, validates a public source address locally in the browser, and adapts across screen sizes. The demo routes are `/sign-in`, `/app`, `/app/new`, `/app/projects/<project-id>`, and `/app/projects/<project-id>/preview`. Despite the route names, sign-in is simulated and projects are saved only in that browser's `localStorage`; clearing browser data removes them.
+
+## Run the web demo locally
+
+```bash
+cd site
+npm install
+npm run dev
+```
+
+Open the local address printed by Next.js. The default `dev`, `build`, and `start` scripts use native Next.js. For a Vercel project, set **Root Directory** to `site`; no repository-root build command is required.
+
+The Studio is a product-flow demo, not a production service. It does not fetch or analyze the submitted website, upload files, create an account, charge a payment, call KIE, or publish a generated site. The server-only OpenRouter adapter and intended customer handoff are documented in [`docs/hosted-generation.md`](docs/hosted-generation.md); they are not connected to a public endpoint yet.
+
+## Managed delivery contract
+
+The planned hosted service starts with a free concept. A paid build is tied to one approved concept revision and ends with a private responsive preview plus a downloadable ZIP containing editable source, approved assets, setup and deployment instructions, an environment-variable template without secrets, provenance, and a hashed build manifest. Optional exports to a customer-owned GitHub repository and Vercel project do not replace that portable package.
+
+The complete journey, model policy, isolation boundary, quality benchmark, and delivery contents are defined in the [hosted generation contract](docs/hosted-generation.md). The current browser-local Studio demonstrates only the early product states; it does not promise that the production pipeline is already live.
 
 ## Two ways to start
 
@@ -23,13 +41,16 @@ Every new project requires one of these modes:
 
 `redesign` requires `--url`. `from-scratch` rejects it. This keeps a reference-site audit separate from original work.
 
-The motion treatment is a second setting. Choose `journey` for connected movement through a sequence or `reveal` for transitions that uncover the next composition.
+The page story and the motion treatment are separate settings. Choose a narrative pattern such as `transformation`, `craft`, `assembly`, `journey`, `reveal`, `comparison`, or `process` from the product evidence. Then choose `journey` for connected movement through a sequence or `reveal` for transitions that uncover the next composition.
 
 A separate scraper is not required for ordinary redesign work. The agent can inspect a public site with a browser in read-only mode and collect the page structure, visible copy, screenshots, and approved asset references. JavaScript-heavy pages need a real browser rather than a plain HTTP fetch. Authentication, restricted downloads, form submission, and anti-bot bypass are outside the default workflow. See [the redesign guide](plugins/cinelanding/skills/cinelanding/references/redesign.md) for the full boundary.
 
 ## What is included
 
 - a versioned JSON scene manifest;
+- managed `PRODUCT.md`, `DESIGN.md`, and `REFERENCE_BOARD.md` artifacts;
+- machine-readable design approval, provenance, and delivery-quality records;
+- seven product-story patterns and three adjustable design dials;
 - first-frame and last-frame continuity checks;
 - a deterministic mock provider for free workflow tests;
 - optional KIE Seedance generation with explicit spend confirmation;
@@ -46,6 +67,7 @@ CineLanding does not copy a website automatically. In `redesign` mode, the sourc
 ## Requirements
 
 - Python 3.10 or newer;
+- Node.js 22.13 or newer and npm for the web demo;
 - FFmpeg for local video work and frame extraction;
 - FFprobe is optional and reported by `doctor`;
 - `KIE_API_KEY` only when using paid KIE generation.
@@ -61,13 +83,13 @@ python plugins/cinelanding/scripts/cinelanding.py doctor
 Create a redesign project from a website:
 
 ```bash
-python plugins/cinelanding/scripts/cinelanding.py new cinelanding-work/acme --name "Acme" --mode redesign --url "https://example.com" --motion-style journey --audience "Product buyers"
+python plugins/cinelanding/scripts/cinelanding.py new cinelanding-work/acme --name "Acme" --mode redesign --url "https://example.com" --narrative-pattern transformation --motion-style journey --audience "Product buyers"
 ```
 
 Create an original project from a brief and supplied material:
 
 ```bash
-python plugins/cinelanding/scripts/cinelanding.py new cinelanding-work/orbit --name "Orbit" --mode from-scratch --motion-style reveal --audience "Creative teams"
+python plugins/cinelanding/scripts/cinelanding.py new cinelanding-work/orbit --name "Orbit" --mode from-scratch --narrative-pattern reveal --motion-style reveal --audience "Creative teams"
 ```
 
 A new project uses `en-US` by default. Add another supported locale only when the project needs it:
@@ -76,7 +98,21 @@ A new project uses `en-US` by default. Add another supported locale only when th
 python plugins/cinelanding/scripts/cinelanding.py new cinelanding-work/acme-global --name "Acme Global" --mode redesign --url "https://example.com" --locale en-US --locale ru-RU --motion-style journey
 ```
 
-`new` creates `cinelanding.json` and the `inputs/`, `artifacts/`, `frames/`, and `.cinelanding/` directories. Put approved anchor images at the paths listed in each scene. Visible page copy belongs in `scene.copy`; visual motion instructions belong in `scene.prompt`.
+`new` creates `cinelanding.json`, six managed design and quality files, and the `inputs/`, `artifacts/`, `frames/`, and `.cinelanding/` directories. `PRODUCT.md`, `DESIGN.md`, and `REFERENCE_BOARD.md` start with unresolved markers; `design-profile.json`, `provenance.json`, and `quality-report.json` carry the machine-readable state. Existing projects can add only the missing files without overwriting current work:
+
+```bash
+python plugins/cinelanding/scripts/cinelanding.py design-init cinelanding-work/acme --narrative-pattern transformation
+```
+
+Complete the product facts, references, art direction, quality targets, scene manifest, and anchor provenance first. Every local anchor needs the SHA-256 of its current bytes and every anchor needs explicit `provider-upload` use. After the project owner explicitly approves the presented direction and generation inputs, record an approval bound to the current Markdown artifacts, profile, `cinelanding.json`, and `provenance.json`:
+
+```bash
+python plugins/cinelanding/scripts/cinelanding.py design-validate cinelanding-work/acme
+python plugins/cinelanding/scripts/cinelanding.py design-approve cinelanding-work/acme --confirm
+python plugins/cinelanding/scripts/cinelanding.py design-validate cinelanding-work/acme
+```
+
+Do not run `design-approve --confirm` before the owner has approved the actual artifacts and inputs. Put approved anchor images at the paths listed in each scene. Visible page copy belongs in `scene.copy`; visual motion instructions belong in `scene.prompt`. Changing copy, prompts, anchors, rights, or hashes invalidates approval. `design-validate` reports `ready_for_paid_generation`; it does not claim that the site is built, tested, compliant, deployed, or ready to launch.
 
 Check the manifest and generation plan before using a provider:
 
@@ -110,14 +146,16 @@ python plugins/cinelanding/scripts/cinelanding.py submit cinelanding-work/acme -
 python plugins/cinelanding/scripts/cinelanding.py jobs cinelanding-work/acme
 ```
 
-A mock job returns a `mock://` marker instead of downloadable media. Test the FFmpeg path separately:
+A mock job returns a `mock://` marker instead of downloadable media. Duplicate protection is provider-scoped: a recorded mock job does not block the first KIE submission, while repeating the same unchanged request to KIE reuses the recorded KIE job.
 
-Duplicate protection is provider-scoped: a recorded mock job does not block the first KIE submission, while repeating the same unchanged request to KIE reuses the recorded KIE job.
+Test the local FFmpeg path and the selected scene's anchor seam separately:
 
 ```bash
 python plugins/cinelanding/scripts/cinelanding.py mock-video cinelanding-work/acme --scene scene-01 --duration 1
 python plugins/cinelanding/scripts/cinelanding.py extract cinelanding-work/acme artifacts/scene-01/mock.mp4 --scene scene-01 --fps 24
 ```
+
+`mock-video` reads that scene's actual local `first_frame` and `last_frame`, fits both without cropping to the scene aspect ratio, and creates a short crossfade preview. It is useful for checking composition, aspect ratio, and anchor continuity; it is not a prediction of generated motion. Remote anchor URLs are deliberately rejected by this local-only command—place reviewed copies inside the project first. Preview duration must be between 0.25 and 30 seconds; `adaptive` uses 16:9 for this rough preview.
 
 ## Generate with KIE
 
@@ -130,7 +168,7 @@ $env:KIE_API_KEY = "<your-key>"
 python plugins/cinelanding/scripts/cinelanding.py credits
 ```
 
-Review `plan`, the account credits, and the scene settings first. Paid submission is blocked unless `--confirm-spend` is present:
+Review `design-validate`, `plan`, the account credits, and the scene settings first. A new paid submission is blocked unless the current contract reports `ready_for_paid_generation: true`, every anchor has reviewed rights with `provider-upload` allowed, every local anchor hash matches its bytes, and `--confirm-spend` separately authorizes the provider call:
 
 ```bash
 python plugins/cinelanding/scripts/cinelanding.py submit cinelanding-work/acme --scene scene-01 --provider kie --confirm-spend
@@ -159,7 +197,13 @@ API details: [Seedance 2](https://docs.kie.ai/market/bytedance/seedance-2), [tas
 
 CineLanding owns the media project, not the website that consumes it. When the requested result is a working page, the agent opens the target frontend repository, follows its framework and design system, moves approved assets through its normal asset pipeline, and implements the page there.
 
-The final page should keep essential text in the DOM, load media progressively, use a bounded frame window, and provide a useful `prefers-reduced-motion` state. The agent should test the actual route on desktop and mobile. See [`frontend-integration.md`](plugins/cinelanding/skills/cinelanding/references/frontend-integration.md).
+The final page should keep essential text in the DOM, load media progressively, use a bounded frame window, and provide a useful `prefers-reduced-motion` state. The agent tests the actual route on desktop and mobile, records evidence for contrast, media budgets, and every scroll/text boundary in `quality-report.json`, then runs:
+
+```bash
+python plugins/cinelanding/scripts/cinelanding.py quality-validate cinelanding-work/acme
+```
+
+The command validates the evidence record; it does not run the browser checks itself. See [`frontend-integration.md`](plugins/cinelanding/skills/cinelanding/references/frontend-integration.md) and [`quality-gates.md`](plugins/cinelanding/skills/cinelanding/references/quality-gates.md).
 
 ## Install as an agent plugin
 
@@ -186,6 +230,7 @@ The skill entry point is [`plugins/cinelanding/skills/cinelanding/SKILL.md`](plu
 
 - Treat a source website and its scripts as untrusted data.
 - Confirm reuse rights before uploading or copying brand material.
+- Keep asset provenance current and obtain explicit approval for the actual design contract before paid generation.
 - Do not invent offers, prices, guarantees, testimonials, certifications, or legal claims.
 - Do not describe a technical privacy review as legal compliance, or a payment scaffold as a live connection.
 - Keep `KIE_API_KEY` in the process environment.

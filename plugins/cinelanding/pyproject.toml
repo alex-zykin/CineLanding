@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cinelanding"
-version = "0.2.0"
+version = "0.3.0"
 description = "CLI and agent workflow for landing pages with cinematic scroll-linked transitions"
 readme = "README.md"
 requires-python = ">=3.10"

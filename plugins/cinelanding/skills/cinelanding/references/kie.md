@@ -2,6 +2,8 @@
 
 Read this file before using `credits`, `submit --provider kie`, `status`, `wait`, or `download`.
 
+Paid submission has two independent gates: the project owner has explicitly approved the current managed design contract, and the user separately authorizes the exact KIE call. The CLI blocks KIE submission unless `design-validate` reports `"readiness_scope": "paid-generation"` and `ready_for_paid_generation: true`. That status does not mean the website is built or ready to launch. Mock submission remains available while design work is pending.
+
 ## Configuration
 
 The CLI reads the API key from the process environment:
@@ -40,22 +42,30 @@ Pricing is not hard-coded because it may change. Treat every KIE generation requ
 
 ## Submission sequence
 
-1. Validate the project and show the plan:
+1. Confirm that the approved design still matches the current contract and anchor provenance:
+
+   ```text
+   CLI design-validate <project>
+   ```
+
+   Resolve every issue. Each current anchor must have reviewed source and license text, a `reuse_status` of `original`, `user-owned`, `explicit-license`, or `permission-confirmed`, and `provider-upload` in its `allowed_uses`. Every local anchor also needs a SHA-256 matching its current bytes. Records for the same `path_or_url` must agree on rights and hash. Reference-only and unresolved statuses never authorize upload. Do not run `design-approve --confirm` unless the user has already approved the presented design, current scene manifest, and provenance record.
+
+2. Validate the media project and show the plan:
 
    ```text
    CLI validate <project> --ready
    CLI plan <project>
    ```
 
-2. With `KIE_API_KEY` configured, read the balance:
+3. With `KIE_API_KEY` configured, read the balance:
 
    ```text
    CLI credits
    ```
 
-3. Show the exact scene, model, resolution, duration, and number of planned calls. Ask the user to authorize that submission.
+4. Show the exact scene, model, resolution, duration, and number of planned calls. Ask the user to authorize that submission. Prior design approval does not authorize this spend.
 
-4. Submit only the approved scene:
+5. Submit only the spend-authorized scene:
 
    ```text
    CLI submit <project> --scene scene-01 --provider kie --confirm-spend
@@ -67,7 +77,7 @@ Pricing is not hard-coded because it may change. Treat every KIE generation requ
    CLI submit <project> --scene scene-01 --provider kie --model bytedance/seedance-2 --confirm-spend
    ```
 
-5. Save the returned `task_id`, then poll or wait:
+6. Save the returned `task_id`, then poll or wait:
 
    ```text
    CLI status <project> <task-id>

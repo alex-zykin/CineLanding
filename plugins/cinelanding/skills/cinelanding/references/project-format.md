@@ -1,6 +1,10 @@
 # Project format
 
-`cinelanding.json` is the editable source of truth for a CineLanding media project. Schema version 2 contains a `project` object and an ordered `scenes` array.
+`cinelanding.json` is the editable source of truth for CineLanding scene and provider inputs. Schema version 2 contains a `project` object and an ordered `scenes` array.
+
+The managed design stage uses four project-root sidecars: `PRODUCT.md`, `DESIGN.md`, `REFERENCE_BOARD.md`, and `design-profile.json`. They own product evidence, art direction, reference provenance and rights, quality targets, and design approval. Read [design-contract.md](design-contract.md) for their contract; do not duplicate that information in scene prompts.
+
+New projects also receive `provenance.json` and `quality-report.json`. For an existing project, `design-init <project> [--narrative-pattern ...]` creates only missing managed-design files and does not overwrite existing ones.
 
 ## Example
 
@@ -64,6 +68,8 @@
 
 `new` creates an `en-US` project when no `--locale` flag is supplied. Repeating `--locale` preserves the given order. When `--default-locale` is omitted, the first locale is the default.
 
+`project.motion_style` is not `design-profile.json.narrative_pattern`. Motion style controls how scenes transition and has two values. Narrative pattern controls the page's content arc and has seven values. They may use the same word (`journey` or `reveal`) without being coupled.
+
 Schema v1 manifests are interpreted as v2 in memory when loaded. A v1 manifest with `source_url` becomes `redesign`; one without it becomes `from-scratch`. The old `mode` value becomes `motion_style`. The CLI does not rewrite the original v1 file.
 
 ## Scene fields
@@ -95,4 +101,4 @@ When `business.privacy_readiness` is true, `new` also creates `business/privacy-
 
 Do not edit `.cinelanding/jobs.json` to manufacture a provider result. Job fingerprints prevent accidental duplicate submissions, and provider polling writes task updates atomically. Local-frame identity uses the file size and SHA-256 content digest, so replacing an image at the same path produces a different request. A remote frame is identified by its URL.
 
-`validate` checks the schema. `validate --ready` also checks that every local generation input exists. `plan` prints readiness and the expected number of paid calls.
+`validate` checks the scene schema. `validate --ready` also checks that every local generation input exists. `design-validate` checks the separate managed design and provenance gate, including explicit provider-upload use, local anchor hashes, and whether approval still matches this manifest. Its readiness scope is paid generation, not product launch. `plan` prints scene readiness, expected provider calls, and the explicit `ready_for_paid_generation` summary.

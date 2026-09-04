@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from contextlib import redirect_stdout
+from hashlib import sha256
 from io import StringIO
 import json
 from pathlib import Path
@@ -15,13 +16,14 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from cinelanding.cli import main
+from cinelanding.design import DESIGN_ARTIFACTS, approve_design_contract
 from cinelanding.errors import SubmissionUnknownError
 from cinelanding.models import GenerationJob
 from cinelanding.project import create_project, load_jobs
 
 
 def create_ready_project(parent: Path) -> Path:
-    root, _ = create_project(
+    root, project = create_project(
         parent / "demo",
         name="Demo",
         source_url="https://example.com",
@@ -33,6 +35,33 @@ def create_ready_project(parent: Path) -> Path:
     )
     (root / "inputs" / "scene-01-first.png").write_bytes(b"first")
     (root / "inputs" / "scene-01-last.png").write_bytes(b"last")
+    for artifact in DESIGN_ARTIFACTS:
+        (root / artifact).write_text(
+            f"# {artifact.removesuffix('.md')}\n\nReviewed project decision record.\n",
+            encoding="utf-8",
+        )
+    profile_path = root / "design-profile.json"
+    profile = json.loads(profile_path.read_text(encoding="utf-8"))
+    profile["narrative_pattern"] = "journey"
+    for artifact in DESIGN_ARTIFACTS:
+        profile["artifacts"][artifact]["status"] = "ready"
+    profile_path.write_text(
+        json.dumps(profile, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    provenance_path = root / "provenance.json"
+    provenance = json.loads(provenance_path.read_text(encoding="utf-8"))
+    for asset in provenance["assets"]:
+        asset["source"] = "Supplied by project owner"
+        asset["license"] = "Approved for this project"
+        asset["reuse_status"] = "user-owned"
+        asset["allowed_uses"] = ["provider-upload"]
+        asset["sha256"] = sha256((root / asset["path_or_url"]).read_bytes()).hexdigest()
+    provenance_path.write_text(
+        json.dumps(provenance, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    approve_design_contract(root, project, approved_by="test-owner")
     return root
 
 
@@ -131,10 +160,45 @@ class CliSubmissionTests(unittest.TestCase):
 
     def test_new_requires_mode(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
-            with self.assertRaises(SystemExit) as raised:
-                run_cli("new", str(Path(temporary) / "demo"), "--name", "Demo")
+            exit_code, output = run_cli(
+                "new",
+                str(Path(temporary) / "demo"),
+                "--name",
+                "Demo",
+            )
 
-            self.assertEqual(raised.exception.code, 2)
+            self.assertEqual(exit_code, 2)
+            self.assertEqual(output["type"], "CliUsageError")
+            self.assertIn("--mode", output["error"])
+
+    def test_invalid_argument_choice_is_machine_readable(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            exit_code, output = run_cli(
+                "new",
+                str(Path(temporary) / "demo"),
+                "--name",
+                "Demo",
+                "--mode",
+                "unsupported",
+            )
+
+            self.assertEqual(exit_code, 2)
+            self.assertEqual(output["type"], "CliUsageError")
+            self.assertIn("invalid choice", output["error"])
+
+    def test_help_and_version_keep_their_standard_success_exit(self) -> None:
+        cases = (
+            ("--help", "CineLanding agent CLI"),
+            ("--version", "CineLanding"),
+        )
+        for argument, expected in cases:
+            with self.subTest(argument=argument):
+                output = StringIO()
+                with redirect_stdout(output), self.assertRaises(SystemExit) as raised:
+                    main([argument])
+
+                self.assertEqual(raised.exception.code, 0)
+                self.assertIn(expected, output.getvalue())
 
     def test_redesign_requires_url(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

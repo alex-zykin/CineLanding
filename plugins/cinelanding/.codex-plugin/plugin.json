@@ -1,7 +1,7 @@
 {
   "name": "cinelanding",
-  "version": "0.2.0",
-  "description": "CLI and agent workflow for cinematic landing pages with optional privacy-readiness and payment modules.",
+  "version": "0.3.0",
+  "description": "CLI and agent workflow for approved cinematic landing-page design, generation, and delivery.",
   "author": {
     "name": "Alex Zykin",
     "url": "https://github.com/alex-zykin"
@@ -22,7 +22,7 @@
   "interface": {
     "displayName": "CineLanding",
     "shortDescription": "Build landing pages with cinematic transitions.",
-    "longDescription": "CineLanding helps an agent redesign a public website or start from a brief. It includes a dependency-free CLI, free mock checks, an optional KIE.ai adapter, media processing, frontend delivery, a technical personal-data readiness workflow, and a Prodamus payment scaffold.",
+    "longDescription": "CineLanding helps an agent redesign a public website or start from a brief. It includes a managed product and design contract, approval and provenance gates, a dependency-free CLI, free mock checks, an optional KIE.ai adapter, media processing, frontend delivery, a technical personal-data readiness workflow, and a Prodamus payment scaffold.",
     "developerName": "Alex Zykin",
     "category": "Developer Tools",
     "capabilities": ["Interactive", "Write"],
@@ -31,7 +31,7 @@
       "Redesign this website as a cinematic landing page.",
       "Create a landing page from this brief and these assets.",
       "Create a business-ready landing project with a technical privacy review and Prodamus scaffold.",
-      "Validate this CineLanding project before generation."
+      "Validate this CineLanding design contract before generation."
     ],
     "brandColor": "#E65C2E"
   }

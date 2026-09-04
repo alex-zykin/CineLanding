@@ -107,7 +107,8 @@ export default function ScrollSequence({ id, ariaLabel, beats, scrollLabel, fram
     };
 
     const load = (slot: number) => {
-      if (!manifest || slot < 0 || slot >= indices.length) return Promise.resolve(null);
+      const currentManifest = manifest;
+      if (!currentManifest || slot < 0 || slot >= indices.length) return Promise.resolve(null);
       const loaded = images.get(slot);
       if (loaded) return Promise.resolve(loaded);
       const inFlight = pending.get(slot);
@@ -131,7 +132,7 @@ export default function ScrollSequence({ id, ariaLabel, beats, scrollLabel, fram
           pending.delete(slot);
           resolve(null);
         };
-        image.src = frameUrl(manifest, indices[slot]);
+        image.src = frameUrl(currentManifest, indices[slot]);
       });
 
       pending.set(slot, task);
@@ -197,13 +198,14 @@ export default function ScrollSequence({ id, ariaLabel, beats, scrollLabel, fram
       try {
         const response = await fetch('/sequence/manifest.json');
         if (!response.ok) throw new Error(`Frame manifest returned ${response.status}`);
-        manifest = await response.json() as FrameManifest;
+        const loadedManifest = await response.json() as FrameManifest;
+        manifest = loadedManifest;
 
         const isNarrow = window.innerWidth > 0 && window.innerWidth <= 768;
         const stride = isNarrow || connection?.saveData ? 2 : 1;
-        indices = Array.from({ length: Math.ceil(manifest.frames / stride) }, (_, index) => index * stride)
-          .filter((frame) => frame < manifest!.frames);
-        if (indices.at(-1) !== manifest.frames - 1) indices.push(manifest.frames - 1);
+        indices = Array.from({ length: Math.ceil(loadedManifest.frames / stride) }, (_, index) => index * stride)
+          .filter((frame) => frame < loadedManifest.frames);
+        if (indices.at(-1) !== loadedManifest.frames - 1) indices.push(loadedManifest.frames - 1);
 
         root.style.setProperty('--sequence-travel', `${indices.length * 10}px`);
         indices.forEach((_, slot) => {

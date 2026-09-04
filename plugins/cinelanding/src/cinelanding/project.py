@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from .business import write_business_materials
+from .design import write_design_contract
 from .errors import ProjectError
 from .models import GenerationJob, Project, Scene, is_http_url, slugify, utc_now
 
@@ -42,6 +43,7 @@ def create_project(
     privacy_readiness: bool = False,
     payment_gateway: str = "none",
     force: bool = False,
+    narrative_pattern: Optional[str] = None,
 ) -> Tuple[Path, Project]:
     root = destination.expanduser().resolve()
     manifest = root / PROJECT_FILE
@@ -89,6 +91,7 @@ def create_project(
 
     for relative in ("inputs", "artifacts", "frames", STATE_DIR):
         (root / relative).mkdir(parents=True, exist_ok=True)
+    write_design_contract(root, project, narrative_pattern=narrative_pattern)
     write_business_materials(root, project)
     atomic_write_json(manifest, project.to_dict())
     return root, project

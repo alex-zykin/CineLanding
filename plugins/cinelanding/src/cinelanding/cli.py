@@ -10,6 +10,14 @@ import time
 from typing import Any, Dict, Optional, Sequence
 
 from . import __version__
+from .design import (
+    DESIGN_PROJECT_FILES,
+    NARRATIVE_PATTERNS,
+    approve_design_contract,
+    design_contract_status,
+    quality_report_status,
+    write_design_contract,
+)
 from .errors import CineLandingError, ProjectError, SubmissionUnknownError
 from .media import create_mock_video, doctor, download_results, extract_frames
 from .models import GenerationJob, VideoRequest, utc_now
@@ -29,6 +37,15 @@ from .providers.kie import DEFAULT_MODEL
 
 
 TERMINAL_STATES = {"success", "fail"}
+
+
+class CliUsageError(CineLandingError):
+    """Command-line arguments are missing or invalid."""
+
+
+class JsonArgumentParser(argparse.ArgumentParser):
+    def error(self, message: str) -> None:
+        raise CliUsageError(message)
 
 
 def emit(value: Any) -> None:
@@ -83,19 +100,37 @@ def cmd_new(args: argparse.Namespace) -> int:
         mode=args.mode,
         motion_style=args.motion_style,
         audience=args.audience,
+        narrative_pattern=args.narrative_pattern,
         privacy_readiness=privacy_readiness,
         payment_gateway=payment_gateway,
         force=args.force,
     )
-    emit({"created": str(root), "manifest": str(root / "cinelanding.json"), "project": project.to_dict()})
+    emit(
+        {
+            "created": str(root),
+            "manifest": str(root / "cinelanding.json"),
+            "design_contract": list(DESIGN_PROJECT_FILES),
+            "project": project.to_dict(),
+        }
+    )
     return 0
 
 
 def cmd_plan(args: argparse.Namespace) -> int:
     root, project = load_project(args.path)
     result = project_readiness(root, project)
+    design_status = design_contract_status(root, project)
+    result["design"] = {
+        "readiness_scope": design_status["readiness_scope"],
+        "ready_for_paid_generation": design_status["ready_for_paid_generation"],
+        "approval_status": design_status["approval_status"],
+        "issue_count": len(design_status["issues"]),
+    }
     result["cost_note"] = "Provider pricing is not hard-coded. Check KIE credits before paid generation."
-    result["next"] = "Use mock first. KIE submission requires --confirm-spend."
+    result["next"] = (
+        "Run design-validate and resolve its issues before paid KIE generation. "
+        "Use mock first; KIE submission also requires --confirm-spend."
+    )
     emit(result)
     return 0 if result["ready"] else 1
 
@@ -111,6 +146,54 @@ def cmd_validate(args: argparse.Namespace) -> int:
     return 0 if not issues else 1
 
 
+def cmd_design_validate(args: argparse.Namespace) -> int:
+    root, project = load_project(args.path)
+    result = design_contract_status(root, project)
+    emit(result)
+    return 0 if result["ready_for_paid_generation"] else 1
+
+
+def cmd_design_init(args: argparse.Namespace) -> int:
+    root, project = load_project(args.path)
+    existing = {
+        name
+        for name in DESIGN_PROJECT_FILES
+        if (root / name).exists()
+    }
+    write_design_contract(
+        root,
+        project,
+        narrative_pattern=args.narrative_pattern,
+    )
+    emit(
+        {
+            "project": project.slug,
+            "created": [name for name in DESIGN_PROJECT_FILES if name not in existing],
+            "existing": [name for name in DESIGN_PROJECT_FILES if name in existing],
+            "files": list(DESIGN_PROJECT_FILES),
+        }
+    )
+    return 0
+
+
+def cmd_design_approve(args: argparse.Namespace) -> int:
+    if not args.confirm:
+        raise ProjectError(
+            "design approval requires --confirm after the project owner explicitly approves the contract"
+        )
+    root, project = load_project(args.path)
+    result = approve_design_contract(root, project, approved_by=args.approved_by)
+    emit(result)
+    return 0
+
+
+def cmd_quality_validate(args: argparse.Namespace) -> int:
+    root, project = load_project(args.path)
+    result = quality_report_status(root, project)
+    emit(result)
+    return 0 if result["ready"] else 1
+
+
 def cmd_credits(_: argparse.Namespace) -> int:
     provider = KieProvider()
     emit({"provider": "kie", "credits": provider.credits()})
@@ -119,6 +202,16 @@ def cmd_credits(_: argparse.Namespace) -> int:
 
 def cmd_submit(args: argparse.Namespace) -> int:
     root, project = load_project(args.path)
+    if args.provider == "kie":
+        design_status = design_contract_status(root, project)
+        if not design_status["ready_for_paid_generation"]:
+            first_issue = design_status["issues"][0] if design_status["issues"] else "unknown issue"
+            raise ProjectError(
+                "paid KIE generation is blocked because the design contract is not ready "
+                "for paid generation; "
+                "run 'cinelanding design-validate <project>' and resolve its issues "
+                f"(first issue: {first_issue})"
+            )
     request = request_for(root, project, args.scene, args.model, args.callback_url)
     fingerprint = request.fingerprint()
     existing = find_job_by_fingerprint(root, fingerprint, args.provider)
@@ -218,7 +311,7 @@ def cmd_jobs(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="cinelanding", description="CineLanding agent CLI")
+    parser = JsonArgumentParser(prog="cinelanding", description="CineLanding agent CLI")
     parser.add_argument("--version", action="version", version=f"CineLanding {__version__}")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
@@ -252,6 +345,11 @@ def build_parser() -> argparse.ArgumentParser:
         default="journey",
         help="Visual transition style (default: journey)",
     )
+    new_parser.add_argument(
+        "--narrative-pattern",
+        choices=sorted(NARRATIVE_PATTERNS),
+        help="Separate page-story pattern; left unselected when omitted",
+    )
     new_parser.add_argument("--audience", default="general")
     new_parser.add_argument(
         "--business-ready",
@@ -280,6 +378,48 @@ def build_parser() -> argparse.ArgumentParser:
     validate_parser.add_argument("path", type=Path)
     validate_parser.add_argument("--ready", action="store_true", help="Require every generation input")
     validate_parser.set_defaults(func=cmd_validate)
+
+    design_init_parser = subparsers.add_parser(
+        "design-init",
+        help="Add missing design-contract files to an existing project",
+    )
+    design_init_parser.add_argument("path", type=Path)
+    design_init_parser.add_argument(
+        "--narrative-pattern",
+        choices=sorted(NARRATIVE_PATTERNS),
+        help="Initial page-story pattern when design-profile.json is missing",
+    )
+    design_init_parser.set_defaults(func=cmd_design_init)
+
+    design_validate_parser = subparsers.add_parser(
+        "design-validate",
+        help="Validate the design contract and explicit approval gate",
+    )
+    design_validate_parser.add_argument("path", type=Path)
+    design_validate_parser.set_defaults(func=cmd_design_validate)
+
+    design_approve_parser = subparsers.add_parser(
+        "design-approve",
+        help="Record explicit project-owner approval after design validation",
+    )
+    design_approve_parser.add_argument("path", type=Path)
+    design_approve_parser.add_argument(
+        "--confirm",
+        action="store_true",
+        help="Confirm that the project owner explicitly approved this contract",
+    )
+    design_approve_parser.add_argument(
+        "--approved-by",
+        help="Optional non-secret approver label stored in design-profile.json",
+    )
+    design_approve_parser.set_defaults(func=cmd_design_approve)
+
+    quality_validate_parser = subparsers.add_parser(
+        "quality-validate",
+        help="Validate post-build quality evidence",
+    )
+    quality_validate_parser.add_argument("path", type=Path)
+    quality_validate_parser.set_defaults(func=cmd_quality_validate)
 
     credits_parser = subparsers.add_parser("credits", help="Read KIE account credits")
     credits_parser.set_defaults(func=cmd_credits)
@@ -329,8 +469,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         if callable(reconfigure):
             reconfigure(encoding="utf-8")
     parser = build_parser()
-    args = parser.parse_args(argv)
     try:
+        args = parser.parse_args(argv)
         return int(args.func(args))
     except CineLandingError as exc:
         emit({"error": str(exc), "type": exc.__class__.__name__})
