@@ -4,7 +4,7 @@
 
 CineLanding is an open source CLI and agent plugin for landing pages with cinematic, scroll-linked transitions. It turns product evidence into a reviewable design contract, manages scene plans, anchor frames, generation jobs, downloads, and FFmpeg frame extraction, then guides an agent through frontend delivery and runtime quality checks. Managed Russian-language projects may optionally add a technical personal-data review and a Prodamus payment-integration workflow.
 
-The repository now includes a Vercel-native, browser-local Studio demo alongside the portable core. It exercises the project, concept, approval, demo-build, and preview flow without creating real accounts or calling a backend. Real authentication, server-side persistence, payments, KIE jobs, and generated-site publishing are not connected yet. The production architecture is documented in [`docs/saas-mvp.md`](docs/saas-mvp.md). The project domain is [cinelanding.ru](https://cinelanding.ru).
+The repository now includes a Vercel-native, browser-local Studio demo alongside the portable core. It exercises the project, concept, approval, demo-build, and preview flow without creating real accounts or calling a backend. Real authentication, server-side persistence, payments, KIE jobs, and generated-site publishing are not connected yet. The production architecture is documented in [`docs/saas-mvp.md`](docs/saas-mvp.md). The registered project domain is `cinelanding.ru`; its DNS cutover to Vercel is still pending.
 
 ## Live MVP
 

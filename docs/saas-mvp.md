@@ -120,7 +120,7 @@ npm run dev
 
 Set the Vercel project's **Root Directory** to `site`. The legacy `dev:vinext`, `build:vinext`, and `start:vinext` commands remain available for the previous OpenAI Sites/Cloudflare path. Their Vite configuration and development dependencies are not a production backend and must not become dependencies of the native Vercel request path.
 
-The native deployment is live at [`cinelanding.vercel.app`](https://cinelanding.vercel.app). Vercel built the project with the Next.js preset and no Cloudflare runtime dependency; desktop, mobile, reduced-motion, public, Studio, and local-preview paths were smoke-tested on the deployed origin. Custom-domain DNS, canonical-origin settings, and redirects still need a separate check before moving `cinelanding.ru`.
+The native deployment is live at [`cinelanding.vercel.app`](https://cinelanding.vercel.app). Vercel built the project with the Next.js preset and no Cloudflare runtime dependency; desktop, mobile, reduced-motion, public, Studio, and local-preview paths were smoke-tested on the deployed origin. `cinelanding.ru` is attached to the Vercel project, but its Beget-managed DNS still points elsewhere. DNS cutover, canonical-origin settings, redirects, TLS, and post-cutover checks remain separate launch steps.
 
 ## Delivery phases and acceptance gates
 
@@ -136,9 +136,9 @@ Define the control-plane/core interface, threat model, data map, licensing bound
 
 **Status:** deployed and smoke-tested on Vercel. Native Next.js scripts, the existing showcase, and browser-local Studio routes are present. The vinext commands remain as an explicitly named legacy path.
 
-The `site` root is linked to the Vercel project `cinelanding`. Configure the recommended domains only after the owner accepts the deployed MVP and the canonical-origin/DNS checks pass.
+The `site` root is linked to the Vercel project `cinelanding`, and the apex domain is attached without forcing traffic over. Change its DNS only after the owner accepts the deployed MVP and the canonical-origin plan.
 
-**Remaining gate:** verify custom-domain ownership, DNS, canonical URLs, redirects, and final owner acceptance before moving `cinelanding.ru`. Repeat the build and browser checks after any domain-sensitive change.
+**Remaining gate:** replace the old apex record at the DNS provider with the record shown by the current Vercel domain settings, then verify DNS, TLS, canonical URLs, redirects, and final owner acceptance. Repeat the build and browser checks after the cutover.
 
 ### 2. Tenant-safe control plane
 
